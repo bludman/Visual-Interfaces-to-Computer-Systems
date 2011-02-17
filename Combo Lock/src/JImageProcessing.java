@@ -1,7 +1,7 @@
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.Vector;
+import java.util.prefs.BackingStoreException;
 
 /**
  * Used for thresholding an image and finding an appropriate range of colors for tracking
@@ -233,9 +233,7 @@ public class JImageProcessing
 		if(output == null)
 			return null;
 		
-		
 		JImage thresholdedImage = thresholdSkin(new JImage(image));
-		
 		
 		JBlobDetector detector = new JBlobDetector();
 		Vector<JBlob> blobs = detector.findBlobs(thresholdedImage);
@@ -244,40 +242,67 @@ public class JImageProcessing
 		output.setTrackedBlob(blob);
 		
 		JImage isolatedImage = blob.getMask();
-		output.updateImage(isolatedImage.getBufferedImage());
+		
 		
 		
 		String s = JImageProcessing.interpretPose(blob);
-		System.out.println("Percent coverage: "+blob.getPercentCoverage());
+		//System.out.println("Percent coverage: "+blob.getPercentCoverage());
+		//System.out.println("Position: "+JImageProcessing.interpretPosition(blob,thresholdedImage.getWidth(), thresholdedImage.getHeight()));
+		//System.out.println("Blob count: "+ blobs.size());
+		//System.out.println("***CLASSIFICATION: "+classify(blob.getPercentCoverage(),blob.getWidthHeightRatio())+" ***");
 		
-		System.out.println("Position: "+JImageProcessing.interpretPosition(blob,thresholdedImage.getWidth(), thresholdedImage.getHeight()));
-		System.out.println("Blob count: "+ blobs.size());
-		System.out.println("***CLASSIFICATION: "+classify(blob.getPercentCoverage(),blob.getWidthHeightRatio())+" ***");
-		
-		
+		output.updateImage(isolatedImage.getBufferedImage());
 		output.setBlobs(blobs);
 		
-		return null;
+		return new BasicHandCombinationSymbol(
+				BasicHandCombinationSymbol.encodeTrait( classifyPose(blob.getPercentCoverage(),blob.getWidthHeightRatio()))+
+				BasicHandCombinationSymbol.encodeTrait( classifyPosition(blob, thresholdedImage.getWidth(), thresholdedImage.getHeight())));
 		
 		
 	}
 	
-	private static String classify(double percentCoverage, double widthHeightRatio) {
+	/**
+	 * Return the trait as a integer representing the position of the blob
+	 * @return
+	 */
+	private static int classifyPosition(JBlob blob, int width, int height) 
+	{
+		double x = blob.getCentroid().getX();
+		double y = blob.getCentroid().getY();
+		double xRatio = Math.ceil(3*x/width);
+		double yRatio = Math.ceil(3*y/height);
+		//xRatio=Math.round(((xRatio*3)+0.5));
+		//yRatio=Math.round(((yRatio*3)+0.5));
+		
+		int[][] positions = {
+			{BasicHandCombinationSymbol.NW,BasicHandCombinationSymbol.N ,BasicHandCombinationSymbol.NE},
+			{BasicHandCombinationSymbol.W,BasicHandCombinationSymbol.C ,BasicHandCombinationSymbol.E},
+			{BasicHandCombinationSymbol.SW,BasicHandCombinationSymbol.S ,BasicHandCombinationSymbol.SE}
+		};
+		return positions[(int)yRatio-1][(int)xRatio-1];
+	}
+	
+	/**
+	 * Return the trait as an integer representing the pose
+	 * @param percentCoverage
+	 * @param widthHeightRatio
+	 * @return
+	 */
+	private static int classifyPose(double percentCoverage, double widthHeightRatio) 
+	{
 		final int LOW = 0;
 		final int HIGH = 1;
 		
-		String[][] predictions= new String[2][2];
-		predictions[LOW][LOW] = "Open palm closed fingers";
-		predictions[LOW][HIGH] = "Unknown";
-		predictions[HIGH][LOW] = "Open palm spread fingers";
-		predictions[HIGH][HIGH] = "Fist";
+		int[][] predictions= new int[2][2];
+		predictions[LOW][LOW] = BasicHandCombinationSymbol.TOGETHER_HAND;	//"Open palm closed fingers";
+		predictions[LOW][HIGH] = BasicHandCombinationSymbol.UNKNOWN;		//"Unknown";
+		predictions[HIGH][LOW] = BasicHandCombinationSymbol.SPREAD_HAND;	// "Open palm spread fingers";
+		predictions[HIGH][HIGH] = BasicHandCombinationSymbol.FIST;			// "Fist";
 		
-		int whRatio = widthHeightRatio> 0.75 ? HIGH : LOW;
-		int coverage = percentCoverage >0.98 ? HIGH : LOW;
+		int whRatio = widthHeightRatio > 0.75 ? HIGH : LOW;
+		int coverage = percentCoverage > 0.98 ? HIGH : LOW;
 		
-		return predictions[whRatio][coverage];
-		
-		
+		return  predictions[whRatio][coverage]; //pose trait
 	}
 	
 }

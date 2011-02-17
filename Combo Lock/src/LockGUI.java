@@ -206,6 +206,7 @@ public class LockGUI implements ActionListener
 		for(BufferedImage image: loadedImages)
 		{
 			CombinationSymbol symbol = JImageProcessing.classify(image,mask);
+			System.out.println("Parse symbol: "+symbol.prettyString());
 			parsedCombo.addSymbol(symbol);
 		}
 		

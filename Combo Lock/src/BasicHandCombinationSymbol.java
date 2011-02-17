@@ -116,12 +116,12 @@ public class BasicHandCombinationSymbol implements CombinationSymbol
 	 * @param trait
 	 * @return
 	 */
-	private String encodeTrait(int trait)
+	public static String encodeTrait(int trait)
 	{
 		return encodeTrait(new int[]{trait});
 	}
 	
-	private String encodeTrait(int[] traitValues)
+	public static String encodeTrait(int[] traitValues)
 	{
 		int traitDecValue = 0;
 		
