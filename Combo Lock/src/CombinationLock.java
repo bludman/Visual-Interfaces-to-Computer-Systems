@@ -24,8 +24,11 @@ public class CombinationLock {
 	
 	public CombinationLock()
 	{
+		combination = new Combination();
 	}
 	
+	
+
 	public void setCombination(Combination combination)
 	{
 		this.combination = combination;
@@ -91,6 +94,13 @@ public class CombinationLock {
 			}
 		}
 		
+		
+	}
+	
+	@Override
+	public String toString() {
+		return "CombinationLock [combination=" + combination + ", grammar="
+				+ grammar + "]";
 	}
 
 }

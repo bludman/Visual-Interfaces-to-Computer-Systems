@@ -1,5 +1,7 @@
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.Vector;
 
 /**
  * Used for thresholding an image and finding an appropriate range of colors for tracking
@@ -224,6 +226,58 @@ public class JImageProcessing
 		return "UNKNOWN";
 	}
 
+	
+	
+	public static CombinationSymbol classify(BufferedImage image, JImageDisplay output)
+	{
+		if(output == null)
+			return null;
 		
+		
+		JImage thresholdedImage = thresholdSkin(new JImage(image));
+		
+		
+		JBlobDetector detector = new JBlobDetector();
+		Vector<JBlob> blobs = detector.findBlobs(thresholdedImage);
+		JBlob blob=JBlob.findBiggestBlob(blobs, thresholdedImage.getWidth(), thresholdedImage.getHeight());
+		
+		output.setTrackedBlob(blob);
+		
+		JImage isolatedImage = blob.getMask();
+		output.updateImage(isolatedImage.getBufferedImage());
+		
+		
+		String s = JImageProcessing.interpretPose(blob);
+		System.out.println("Percent coverage: "+blob.getPercentCoverage());
+		
+		System.out.println("Position: "+JImageProcessing.interpretPosition(blob,thresholdedImage.getWidth(), thresholdedImage.getHeight()));
+		System.out.println("Blob count: "+ blobs.size());
+		System.out.println("***CLASSIFICATION: "+classify(blob.getPercentCoverage(),blob.getWidthHeightRatio())+" ***");
+		
+		
+		output.setBlobs(blobs);
+		
+		return null;
+		
+		
+	}
+	
+	private static String classify(double percentCoverage, double widthHeightRatio) {
+		final int LOW = 0;
+		final int HIGH = 1;
+		
+		String[][] predictions= new String[2][2];
+		predictions[LOW][LOW] = "Open palm closed fingers";
+		predictions[LOW][HIGH] = "Unknown";
+		predictions[HIGH][LOW] = "Open palm spread fingers";
+		predictions[HIGH][HIGH] = "Fist";
+		
+		int whRatio = widthHeightRatio> 0.75 ? HIGH : LOW;
+		int coverage = percentCoverage >0.98 ? HIGH : LOW;
+		
+		return predictions[whRatio][coverage];
+		
+		
+	}
 	
 }

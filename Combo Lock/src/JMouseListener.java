@@ -27,7 +27,7 @@ public class JMouseListener extends MouseInputAdapter {
 		if(e.getButton() == e.BUTTON3 )
 		{
 			System.out.println(x+","+y);
-			display.showThreshold();
+			JImageProcessing.classify(display.getImage(), display.getSecondaryDisplay());
 		}
 	}
 

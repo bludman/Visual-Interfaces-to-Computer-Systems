@@ -21,5 +21,8 @@ public interface CombinationSymbol
 	 * @return
 	 */
 	public String encode();
+	
+
+	public String prettyString();
 
 }

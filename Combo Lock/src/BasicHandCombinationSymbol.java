@@ -19,6 +19,23 @@ public class BasicHandCombinationSymbol implements CombinationSymbol
 	private enum REGION{N,NE,E,SE,S,SW,W,NW,C};
 
 	
+	public static int UNKNOWN = 1;
+	public static int SPREAD_HAND = 2;
+	public static int TOGETHER_HAND = 3;
+	public static int FIST = 4;
+	public static int CHOP = 5;
+
+	public static int N=1;
+	public static int NE = 2;
+	public static int E = 3;
+	public static int SE = 4;
+	public static int S = 5;
+	public static int SW = 6; 
+	public static int W = 7;
+	public static int NW = 8;
+	public static int C = 9;
+	
+	
 	//private REGION position;
 	//private POSE pose;
 	private int position;
@@ -30,6 +47,12 @@ public class BasicHandCombinationSymbol implements CombinationSymbol
 	}
 	
 		
+	public BasicHandCombinationSymbol() 
+	{
+		
+	}
+
+
 	/**
 	 * Return a pretty description of the symbol
 	 * @return

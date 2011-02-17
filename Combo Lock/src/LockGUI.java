@@ -32,13 +32,13 @@ public class LockGUI implements ActionListener
 {
 	private JFrame frame;
 	private JPanel panel;
-	private ImageClassifier classifier;
 	private JImageDisplay original;
 	private JFrame f_original;
 	private JImageDisplay mask;
 	private JFrame f_mask;
 	private JScrollPane pane;
 	private JPanel imagePanel;
+	private ArrayList<BufferedImage> loadedImages; 
 	
 	private JComboBox cmbCombination;
 	private ArrayList<File> comboImageFiles;
@@ -47,8 +47,9 @@ public class LockGUI implements ActionListener
 	
 	public LockGUI() 
 	{
+		loadedImages = new ArrayList<BufferedImage>();
 		comboImageFiles = new ArrayList<File>();
-		
+		lock = new CombinationLock();
 		
 		//setup the JFrame for display
 		
@@ -80,12 +81,16 @@ public class LockGUI implements ActionListener
 		JButton btnAddImage = new JButton("Add Image to Combination");
 		btnAddImage.setActionCommand("Add Image");
 		
+		JButton btnParseCombo = new JButton("Parse Combination");
+		btnParseCombo.setActionCommand("Parse Combo");
+		
 		cmbCombination = new JComboBox();
 			
 		
 		btnLoadLock.addActionListener(this);
 		btnLoadCombo.addActionListener(this);
 		btnAddImage.addActionListener(this);
+		btnParseCombo.addActionListener(this);
 		cmbCombination.addActionListener(this);
 		
 		
@@ -94,6 +99,7 @@ public class LockGUI implements ActionListener
 		panel.add(btnLoadLock);
 		panel.add(btnLoadCombo);
 		panel.add(btnAddImage);
+		panel.add(btnParseCombo);
 		panel.add(cmbCombination);
 		panel.add(pane);
 		
@@ -188,6 +194,21 @@ public class LockGUI implements ActionListener
 		{
 			addImage();
 		}
+		else if(e.getActionCommand().equals("Parse Combo"))
+		{
+			parseCombo();
+		}
+	}
+
+	private void parseCombo() {
+		System.out.println("Parsing Combo");
+		Combination parsedCombo = new Combination();
+		for(BufferedImage image: loadedImages)
+		{
+			CombinationSymbol symbol = JImageProcessing.classify(image,mask);
+			parsedCombo.addSymbol(symbol);
+		}
+		
 	}
 
 	private void addImage() {
@@ -212,6 +233,7 @@ public class LockGUI implements ActionListener
 	private void loadLock()
 	{
 		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new java.io.File("."));
 	    FileNameExtensionFilter filter = new FileNameExtensionFilter("Lock Files", "lock", "txt");
 	    chooser.setFileFilter(filter);
 	    int returnVal = chooser.showOpenDialog(panel);
@@ -224,7 +246,13 @@ public class LockGUI implements ActionListener
 	
 	private void loadLockFile(File selectedFile) {
 		// TODO Auto-generated method stub
-		lock.load(selectedFile);
+		if(selectedFile!=null)
+		{
+			lock.load(selectedFile);
+			System.out.println("Loaded lock:\n"+lock);
+		}
+		else
+			System.out.println("Invalid lock file");
 	}
 
 	/**
@@ -300,6 +328,7 @@ public class LockGUI implements ActionListener
 		try {
 			BufferedImage image = ImageIO.read(aFile);
 			
+			loadedImages.add(image);
 			JImageDisplay d= new JImageDisplay();
 			d.setThresholdViewframe(mask);
 			imagePanel.add(d);

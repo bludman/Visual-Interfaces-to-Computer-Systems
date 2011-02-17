@@ -182,65 +182,83 @@ public class JImageDisplay extends JPanel {
 	
 	
 	
-	public void showThreshold() 
-	{
-		if(thresholdFrame == null)
-			return;
-		
-		
-		
-		//int[][] range = JImageProcessing.findRangeByAverage(new JImage(image), rect);
-		//System.out.println("Low: "+Arrays.toString(range[0])+" high: "+Arrays.toString(range[1]));
-		//JImage j = JImageProcessing.threshold(new JImage(image), range[0], range[1]);
+//	public void showThreshold() 
+//	{
+//		if(thresholdFrame == null)
+//			return;
+//		
+//		
+//		
+//		//int[][] range = JImageProcessing.findRangeByAverage(new JImage(image), rect);
+//		//System.out.println("Low: "+Arrays.toString(range[0])+" high: "+Arrays.toString(range[1]));
+//		//JImage j = JImageProcessing.threshold(new JImage(image), range[0], range[1]);
+//
+//		//JImage j = JImageProcessing.threshold(new JImage(image), new int[]{50,0,0}, new int[]{150,255,255});
+//		//JImage j = JImageProcessing.threshold(new JImage(image), new int[]{50,0,0}, new int[]{255,50,255});
+//		
+//		JImage thresholdedImage = JImageProcessing.thresholdSkin(new JImage(image));
+//		
+//		
+//		JBlobDetector detector = new JBlobDetector();
+//		Vector<JBlob> blobs = detector.findBlobs(thresholdedImage);
+//		JBlob blob=JBlob.findBiggestBlob(blobs, thresholdedImage.getWidth(), thresholdedImage.getHeight());
+//		this.trackedBlob = blob;
+//		thresholdFrame.trackedBlob = blob;
+//		//JImage isolatedImage = JImageProcessing.isolateBlob(thresholdedImage, blob);
+//		
+//		JImage isolatedImage = blob.getMask();
+//		thresholdFrame.updateImage(isolatedImage.getBufferedImage());
+//		
+//		
+//		String s = JImageProcessing.interpretPose(blob);
+//		System.out.println("Percent coverage: "+blob.getPercentCoverage());
+//		
+//		//thresholdFrame.updateImage(thresholdedImage.getBufferedImage());
+//		
+//		System.out.println("Position: "+JImageProcessing.interpretPosition(blob,thresholdedImage.getWidth(), thresholdedImage.getHeight()));
+//		System.out.println("Blob count: "+ blobs.size());
+//		System.out.println("***CLASSIFICATION: "+classify(blob.getPercentCoverage(),blob.getWidthHeightRatio())+" ***");
+//		
+//		
+//		thresholdFrame.setBlobs(blobs);
+//		
+//		
+//	}
+//
+//	private String classify(double percentCoverage, double widthHeightRatio) {
+//		final int LOW = 0;
+//		final int HIGH = 1;
+//		
+//		String[][] predictions= new String[2][2];
+//		predictions[LOW][LOW] = "Open palm closed fingers";
+//		predictions[LOW][HIGH] = "Unknown";
+//		predictions[HIGH][LOW] = "Open palm spread fingers";
+//		predictions[HIGH][HIGH] = "Fist";
+//		
+//		int whRatio = widthHeightRatio> 0.75 ? HIGH : LOW;
+//		int coverage = percentCoverage >0.98 ? HIGH : LOW;
+//		
+//		return predictions[whRatio][coverage];
+//		
+//		
+//	}
 
-		//JImage j = JImageProcessing.threshold(new JImage(image), new int[]{50,0,0}, new int[]{150,255,255});
-		//JImage j = JImageProcessing.threshold(new JImage(image), new int[]{50,0,0}, new int[]{255,50,255});
-		
-		JImage thresholdedImage = JImageProcessing.thresholdSkin(new JImage(image));
-		
-		
-		JBlobDetector detector = new JBlobDetector();
-		Vector<JBlob> blobs = detector.findBlobs(thresholdedImage);
-		JBlob blob=JBlob.findBiggestBlob(blobs, thresholdedImage.getWidth(), thresholdedImage.getHeight());
+	/**
+	 * Track a blob in the display
+	 * @param blob
+	 */
+	public void setTrackedBlob(JBlob blob) {
 		this.trackedBlob = blob;
-		thresholdFrame.trackedBlob = blob;
-		//JImage isolatedImage = JImageProcessing.isolateBlob(thresholdedImage, blob);
-		
-		JImage isolatedImage = blob.getMask();
-		thresholdFrame.updateImage(isolatedImage.getBufferedImage());
-		
-		
-		String s = JImageProcessing.interpretPose(blob);
-		System.out.println("Percent coverage: "+blob.getPercentCoverage());
-		
-		//thresholdFrame.updateImage(thresholdedImage.getBufferedImage());
-		
-		System.out.println("Position: "+JImageProcessing.interpretPosition(blob,thresholdedImage.getWidth(), thresholdedImage.getHeight()));
-		System.out.println("Blob count: "+ blobs.size());
-		System.out.println("***CLASSIFICATION: "+classify(blob.getPercentCoverage(),blob.getWidthHeightRatio())+" ***");
-		
-		
-		thresholdFrame.setBlobs(blobs);
-		
 		
 	}
 
-	private String classify(double percentCoverage, double widthHeightRatio) {
-		final int LOW = 0;
-		final int HIGH = 1;
-		
-		String[][] predictions= new String[2][2];
-		predictions[LOW][LOW] = "Open palm closed fingers";
-		predictions[LOW][HIGH] = "Unknown";
-		predictions[HIGH][LOW] = "Open palm spread fingers";
-		predictions[HIGH][HIGH] = "Fist";
-		
-		int whRatio = widthHeightRatio> 0.75 ? HIGH : LOW;
-		int coverage = percentCoverage >0.98 ? HIGH : LOW;
-		
-		return predictions[whRatio][coverage];
-		
-		
+	public BufferedImage getImage() {
+		return image;
+	}
+
+	public JImageDisplay getSecondaryDisplay() {
+		// TODO Auto-generated method stub
+		return thresholdFrame;
 	}
 
 }
