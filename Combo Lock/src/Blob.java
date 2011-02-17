@@ -1,11 +1,10 @@
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Vector;
 
 
-public class JBlob {
+public class Blob {
 	public int mX, mY, mWidth, mHeight;  // bounding box; (x,y) is upper-left corner
 	public int mMinX, mMinY, mMaxX, mMaxY;
 	public Vector<JPoint2D> mPoints;
@@ -15,7 +14,7 @@ public class JBlob {
 	private int originalImageWidth;
 	private int originalImageHeight;
 
-	public JBlob()
+	public Blob()
 	{
 		mX = 0;
 		mY = 0;
@@ -31,7 +30,7 @@ public class JBlob {
 		points = new HashSet<JPoint2D>();
 	}
 	
-	public JBlob(int width, int height)
+	public Blob(int width, int height)
 	{
 		this();
 		originalImageWidth = width;
@@ -134,15 +133,15 @@ public class JBlob {
 	}
 	
 		
-	public static JBlob findBiggestBlob(Vector<JBlob> jbs,  int width, int height) 
+	public static Blob findBiggestBlob(Vector<Blob> jbs,  int width, int height) 
 	{	
-		JBlob biggest = new JBlob();
+		Blob biggest = new Blob();
 		if (jbs == null)
 		{
 			return null;
 		}
 		
-		for (JBlob b : jbs)
+		for (Blob b : jbs)
 		{
 			if (b.getBoundingBox().getHeight() * b.getBoundingBox().getWidth() < height * width &&
 					b.getNumPoints() > biggest.getNumPoints())

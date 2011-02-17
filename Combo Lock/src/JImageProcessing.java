@@ -1,7 +1,6 @@
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
-import java.util.prefs.BackingStoreException;
 
 /**
  * Used for thresholding an image and finding an appropriate range of colors for tracking
@@ -97,7 +96,7 @@ public class JImageProcessing
 	}
 	
 
-	public static JImage isolateBlob(JImage in, JBlob blob)
+	public static JImage isolateBlob(JImage in, Blob blob)
 	{
 		
 		int width = in.getWidth();
@@ -199,7 +198,7 @@ public class JImageProcessing
 		return new int[][] {low, high};
 	}
 
-	public static String interpretPosition(JBlob blob,int width,int height) 
+	public static String interpretPosition(Blob blob,int width,int height) 
 	{
 		double x = blob.getCentroid().getX();
 		double y = blob.getCentroid().getY();
@@ -218,8 +217,7 @@ public class JImageProcessing
 	}
 	
 	
-	
-	public static String interpretPose(JBlob blob)
+	public static String interpretPose(Blob blob)
 	{
 		double ratio = (double)blob.getWidth()/ blob.getHeight();
 		System.out.println("wh ratio: "+ratio);
@@ -236,8 +234,8 @@ public class JImageProcessing
 		JImage thresholdedImage = thresholdSkin(new JImage(image));
 		
 		JBlobDetector detector = new JBlobDetector();
-		Vector<JBlob> blobs = detector.findBlobs(thresholdedImage);
-		JBlob blob=JBlob.findBiggestBlob(blobs, thresholdedImage.getWidth(), thresholdedImage.getHeight());
+		Vector<Blob> blobs = detector.findBlobs(thresholdedImage);
+		Blob blob=Blob.findBiggestBlob(blobs, thresholdedImage.getWidth(), thresholdedImage.getHeight());
 		
 		output.setTrackedBlob(blob);
 		
@@ -245,7 +243,7 @@ public class JImageProcessing
 		
 		
 		
-		String s = JImageProcessing.interpretPose(blob);
+		//String s = JImageProcessing.interpretPose(blob);
 		//System.out.println("Percent coverage: "+blob.getPercentCoverage());
 		//System.out.println("Position: "+JImageProcessing.interpretPosition(blob,thresholdedImage.getWidth(), thresholdedImage.getHeight()));
 		//System.out.println("Blob count: "+ blobs.size());
@@ -265,7 +263,7 @@ public class JImageProcessing
 	 * Return the trait as a integer representing the position of the blob
 	 * @return
 	 */
-	private static int classifyPosition(JBlob blob, int width, int height) 
+	private static int classifyPosition(Blob blob, int width, int height) 
 	{
 		double x = blob.getCentroid().getX();
 		double y = blob.getCentroid().getY();
@@ -292,14 +290,23 @@ public class JImageProcessing
 	{
 		final int LOW = 0;
 		final int HIGH = 1;
+		final int XLOW = 2;
 		
-		int[][] predictions= new int[2][2];
+		final double HIGH_WH_THRESHOLD = 0.75;
+		final double MID_WH_THRESHOLD = 0.6;
+		
+		
+		System.out.println("SH ratio: "+widthHeightRatio+" coverage"+percentCoverage);
+		
+		int[][] predictions= new int[3][2];
+		predictions[XLOW][LOW] = BasicHandCombinationSymbol.CHOP;	//"chop";
+		predictions[XLOW][HIGH] = BasicHandCombinationSymbol.UNKNOWN;		//"Unknown";
 		predictions[LOW][LOW] = BasicHandCombinationSymbol.TOGETHER_HAND;	//"Open palm closed fingers";
 		predictions[LOW][HIGH] = BasicHandCombinationSymbol.UNKNOWN;		//"Unknown";
 		predictions[HIGH][LOW] = BasicHandCombinationSymbol.SPREAD_HAND;	// "Open palm spread fingers";
 		predictions[HIGH][HIGH] = BasicHandCombinationSymbol.FIST;			// "Fist";
 		
-		int whRatio = widthHeightRatio > 0.75 ? HIGH : LOW;
+		int whRatio = widthHeightRatio > HIGH_WH_THRESHOLD ? HIGH : (widthHeightRatio > MID_WH_THRESHOLD ? LOW : XLOW);
 		int coverage = percentCoverage > 0.98 ? HIGH : LOW;
 		
 		return  predictions[whRatio][coverage]; //pose trait

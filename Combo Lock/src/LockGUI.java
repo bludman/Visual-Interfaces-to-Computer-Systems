@@ -9,13 +9,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -32,8 +32,6 @@ public class LockGUI implements ActionListener
 {
 	private JFrame frame;
 	private JPanel panel;
-	private JImageDisplay original;
-	private JFrame f_original;
 	private JImageDisplay mask;
 	private JFrame f_mask;
 	private JScrollPane pane;
@@ -41,14 +39,12 @@ public class LockGUI implements ActionListener
 	private ArrayList<BufferedImage> loadedImages; 
 	
 	private JComboBox cmbCombination;
-	private ArrayList<File> comboImageFiles;
 
 	private CombinationLock lock;
 	
 	public LockGUI() 
 	{
 		loadedImages = new ArrayList<BufferedImage>();
-		comboImageFiles = new ArrayList<File>();
 		lock = new CombinationLock();
 		
 		//setup the JFrame for display
@@ -68,10 +64,6 @@ public class LockGUI implements ActionListener
 		panel.setOpaque(true);
 		frame.setContentPane(panel);
 		
-		
-		
-		
-		
 		JButton btnLoadLock = new JButton("Load a Lock");
 		btnLoadLock.setActionCommand("Load Lock");
 		
@@ -84,6 +76,9 @@ public class LockGUI implements ActionListener
 		JButton btnParseCombo = new JButton("Parse Combination");
 		btnParseCombo.setActionCommand("Parse Combo");
 		
+		JButton btnResetCombo = new JButton("Reset Combination");
+		btnResetCombo.setActionCommand("Reset Combo");
+		
 		cmbCombination = new JComboBox();
 			
 		
@@ -91,6 +86,7 @@ public class LockGUI implements ActionListener
 		btnLoadCombo.addActionListener(this);
 		btnAddImage.addActionListener(this);
 		btnParseCombo.addActionListener(this);
+		btnResetCombo.addActionListener(this);
 		cmbCombination.addActionListener(this);
 		
 		
@@ -100,18 +96,10 @@ public class LockGUI implements ActionListener
 		panel.add(btnLoadCombo);
 		panel.add(btnAddImage);
 		panel.add(btnParseCombo);
+		panel.add(btnResetCombo);
 		panel.add(cmbCombination);
 		panel.add(pane);
 		
-		
-		
-//		original = new JImageDisplay();
-//		f_original = new JFrame();
-//		f_original.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		f_original.add(original);
-//		f_original.setResizable(false);
-//		f_original.setVisible(true);
-
 		mask = new JImageDisplay();	
 		f_mask = new JFrame("Processed Image");
 		f_mask.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -131,52 +119,6 @@ public class LockGUI implements ActionListener
 
 	}
 
-	private void processFrame(BufferedImage bi) 
-	{
-		// setup the window size according to the image
-		f_original.setSize(bi.getWidth(), bi.getHeight());
-		f_mask.setSize(bi.getWidth(), bi.getHeight());
-		
-		// get a JImage out of the decompressed image
-		JImage ji = new JImage(bi);
-
-		// specify the range of RGB channels
-		JImage jmask = new JImage(bi);
-		
-		// blob detection
-		Vector<JBlob> jbs = new Vector<JBlob>();
-		
-		original.setBlobs(jbs);
-		mask.setBlobs(jbs);
-
-		// find the largest blob
-		JBlob max = JBlob.findBiggestBlob(jbs, original.getWidth(), original.getHeight());
-		
-		// draw the centroid
-		original.bluePoint= max.getCentroid();
-		mask.bluePoint= max.getCentroid();
-		
-		// draw an additional point
-		original.redPoint= max.getPointBelow(max.getCentroid());
-		
-		
-		//update the image in each display window
-		original.updateImage(ji.getBufferedImage());
-		mask.updateImage(jmask.getBufferedImage());
-		
-	}
-
-	public void start() throws IOException
-	{
-		System.out.println("Starting");
-		
-		
-		String filename = null;
-		//BufferedImage image = javax.imageio.ImageIO.read(new File(filename)); 
-		
-		
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
@@ -198,8 +140,22 @@ public class LockGUI implements ActionListener
 		{
 			parseCombo();
 		}
+		else if(e.getActionCommand().equals("Reset Combo"))
+		{
+			resetCombo();
+		}
 	}
 
+	private void resetCombo() 
+	{
+		loadedImages = new ArrayList<BufferedImage>();
+		cmbCombination.removeAllItems();
+		imagePanel.removeAll();
+	}
+
+	/**
+	 * Parse the loaded combination images and check if they open the lock
+	 */
 	private void parseCombo() {
 		System.out.println("Parsing Combo");
 		Combination parsedCombo = new Combination();
@@ -210,12 +166,20 @@ public class LockGUI implements ActionListener
 			parsedCombo.addSymbol(symbol);
 		}
 		
+		String msg = "The lock "+(lock.isUnlockedBy(parsedCombo)?"is ":"is not ")+"unlocked by the combination.";
+		System.out.println(msg);
+		JOptionPane.showMessageDialog(frame, msg);
+		
 	}
 
+	
+	/**
+	 * Trigger the add image dialog and load it into the gui and combination
+	 */
 	private void addImage() {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new java.io.File("."));
-		//chooser.setDialogTitle("choosertitle");
+		chooser.setDialogTitle("Add an image to combination");
 	    FileNameExtensionFilter filter = new FileNameExtensionFilter(
 	        "Symbol Image", "jpg", "jpeg");
 	    chooser.setFileFilter(filter);
@@ -246,7 +210,6 @@ public class LockGUI implements ActionListener
 	}
 	
 	private void loadLockFile(File selectedFile) {
-		// TODO Auto-generated method stub
 		if(selectedFile!=null)
 		{
 			lock.load(selectedFile);
@@ -336,7 +299,6 @@ public class LockGUI implements ActionListener
 			d.updateImage(image);
 			
 			cmbCombination.addItem(aFile);
-			comboImageFiles.add(aFile);
 			
 			System.out.println("\tLoaded image: "+aFile.getAbsolutePath());
 		} catch (IOException e) {
@@ -346,31 +308,13 @@ public class LockGUI implements ActionListener
 		
 	}
 
-	/** 
-	 * Check if the loaded lock is unlocked by the loaded combination
-	 */
-	private void checkIfUnlocks()
-	{
-		
-	}
-
-
-
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) 
 	{
 		System.out.println("Initializing GUI");
+		@SuppressWarnings("unused")
 		LockGUI gui = new LockGUI();
-		try {
-			gui.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
-
-
-
 }

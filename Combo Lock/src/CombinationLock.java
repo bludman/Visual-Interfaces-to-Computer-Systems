@@ -15,12 +15,6 @@ import java.io.InputStreamReader;
 public class CombinationLock {
 	
 	private Combination combination;
-	private LockGrammar grammar;
-	
-	public CombinationLock(LockGrammar grammar) 
-	{
-		this.grammar = grammar;
-	}
 	
 	public CombinationLock()
 	{
@@ -36,12 +30,19 @@ public class CombinationLock {
 	
 	public boolean isUnlockedBy(Combination other)
 	{
-		Combination otherParsedCombination = grammar.parse(other);
-		Combination thisParsedCombination = grammar.parse(this.combination);
+		Combination otherParsedCombination = parse(other);
+		Combination thisParsedCombination = parse(this.combination);
 		
 		
 		return thisParsedCombination.matches(otherParsedCombination);
 	}
+
+	private Combination parse(Combination other) {
+		// TODO Auto-generated method stub
+		return other;
+	}
+
+
 
 	public void load(File fileToRead) 
 	{
@@ -99,8 +100,7 @@ public class CombinationLock {
 	
 	@Override
 	public String toString() {
-		return "CombinationLock [combination=" + combination + ", grammar="
-				+ grammar + "]";
+		return "CombinationLock [combination=" + combination + "]";
 	}
 
 }

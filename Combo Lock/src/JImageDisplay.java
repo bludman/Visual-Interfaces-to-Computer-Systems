@@ -19,7 +19,7 @@ public class JImageDisplay extends JPanel {
 	//current tracked blob
 	private ArrayList<Rectangle> blobRectangles;
 	
-	private JBlob trackedBlob;
+	private Blob trackedBlob;
 	
 	//tracked points
 	public JPoint2D redPoint;
@@ -30,14 +30,12 @@ public class JImageDisplay extends JPanel {
 	private boolean selectionUpdated;
 	
 	private JMouseListener mouseListener;
-	private JKeyListener keyListener;
 	
 	private JImageDisplay secondaryDisplay;
 
 	public JImageDisplay() {
 		//initialize two listeners
 		mouseListener = new JMouseListener(this);
-		keyListener = new JKeyListener(this);
 		
 		//add mouse listener
 		addMouseListener(mouseListener);
@@ -45,7 +43,6 @@ public class JImageDisplay extends JPanel {
 	    
 	    //add key listener to the JPanel
 	    setFocusable(true);
-	    addKeyListener(keyListener);
 	    rect = new Rectangle();
 	    selectionUpdated = false;
 	    
@@ -145,7 +142,7 @@ public class JImageDisplay extends JPanel {
 		selectionUpdated = true;
 	}
 
-	public void setBlobs(Vector<JBlob> jbs) {
+	public void setBlobs(Vector<Blob> jbs) {
 		//System.out.println("Adding "+jbs.size()+" blobs");
 		this.blobRectangles = new ArrayList<Rectangle>();
 
@@ -153,7 +150,7 @@ public class JImageDisplay extends JPanel {
 		Rectangle biggestRectangle = new Rectangle(0, 0);
 		int maxPoints = 0, totalPoints = 0;
 		
-		for(JBlob blob : jbs)
+		for(Blob blob : jbs)
 		{
 			totalPoints = blob.getNumPoints();
 			if(totalPoints > maxPoints && 
@@ -161,8 +158,8 @@ public class JImageDisplay extends JPanel {
 			{
 				biggestRectangle= blob.getBoundingBox();
 				maxPoints = blob.getNumPoints();
-				System.out.println("Numpoints: "+maxPoints);
-				System.out.println("Bounding box: "+ blob.getBoundingBox());
+//				System.out.println("Numpoints: "+maxPoints);
+//				System.out.println("Bounding box: "+ blob.getBoundingBox());
 				redPoint = blob.getCentroid();
 				
 			}
@@ -182,7 +179,7 @@ public class JImageDisplay extends JPanel {
 	 * Track a blob in the display
 	 * @param blob
 	 */
-	public void setTrackedBlob(JBlob blob) {
+	public void setTrackedBlob(Blob blob) {
 		this.trackedBlob = blob;
 	}
 

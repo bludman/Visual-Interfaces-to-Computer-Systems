@@ -33,9 +33,9 @@ public class JBlobDetector {
 		//set[findSet(s1, set)]=findSet(s2, set);
 	}
 	
-	public Vector<JBlob> findBlobs(JImage mask)
+	public Vector<Blob> findBlobs(JImage mask)
 	{
-		Vector<JBlob> blobs = new Vector<JBlob>();
+		Vector<Blob> blobs = new Vector<Blob>();
 		
 		int imageHeight = mask.getHeight();
 		int imageWidth = mask.getWidth();
@@ -112,7 +112,7 @@ public class JBlobDetector {
 			{
 				labelEquivalents.setProperty(Integer.toString(i), Integer.toString(newLabel++));
 			}
-			blobs.add(new JBlob(mask.getWidth(),mask.getHeight()));
+			blobs.add(new Blob(mask.getWidth(),mask.getHeight()));
 		}
 		
 		/* Rescan image and reset the labels with newly minimized labels */
@@ -120,14 +120,14 @@ public class JBlobDetector {
 		{
 			for (int col = 0; col < imageWidth; ++col)
 			{
-				JBlob b = blobs.get(Integer.parseInt(labelEquivalents.getProperty(Integer.toString(imageData[row][col]))));
+				Blob b = blobs.get(Integer.parseInt(labelEquivalents.getProperty(Integer.toString(imageData[row][col]))));
 				b.addPoint(col, row);
 			}
 		}
 
-		Vector<JBlob> finalBlobs = new Vector<JBlob>();
+		Vector<Blob> finalBlobs = new Vector<Blob>();
 		
-		for(JBlob b : blobs)
+		for(Blob b : blobs)
 		{
 			if(b.getNumPoints()>MIN_BLOB_SIZE)
 				finalBlobs.add(b);
