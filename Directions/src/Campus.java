@@ -68,7 +68,7 @@ public class Campus
 	{
 		final int LABEL = 0;
 		final int NAME = 1;
-		buildings.put(0, new Building("Background"));
+		buildings.put(0, new Building("Background",0));
 	
 		
 		File fileToRead = new File(nameTable);
@@ -83,7 +83,7 @@ public class Campus
 				System.out.println(readRow);
 				String[] tokens = readRow.split("=");
 				//System.out.println("label: "+Integer.parseInt(tokens[LABEL])+" name: "+tokens[NAME].replace("\"", ""));
-				buildings.put(Integer.parseInt(tokens[LABEL]), new Building(tokens[NAME].replace("\"", "")));
+				buildings.put(Integer.parseInt(tokens[LABEL]), new Building(tokens[NAME].replace("\"", ""),Integer.parseInt(tokens[LABEL])));
 			}
 		}
 		catch (IOException e)

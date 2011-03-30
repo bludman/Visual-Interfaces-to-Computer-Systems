@@ -44,13 +44,13 @@ public class JImageDisplay extends JPanel {
 
 	public JImageDisplay(Campus campus) {
 		
-		//initialize two listeners
-		mouseListener = new JMouseListener(this);
-		
-		//add mouse listener
-		addMouseListener(mouseListener);
-	    addMouseMotionListener(mouseListener);
-	    mouseListener.setCampus(campus);
+//		//initialize two listeners
+//		mouseListener = new JMouseListener(this);
+//		
+//		//add mouse listener
+//		addMouseListener(mouseListener);
+//	    addMouseMotionListener(mouseListener);
+//	    mouseListener.setCampus(campus);
 	    
 	    //add key listener to the JPanel
 	    setFocusable(true);

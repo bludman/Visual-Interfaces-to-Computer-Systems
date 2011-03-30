@@ -9,16 +9,22 @@ import java.util.Vector;
  * @author Benjamin Ludman
  */
 public class Building {
+	
+
 	private int mX, mY, mWidth, mHeight;  // bounding box; (x,y) is upper-left corner
 	private int mMinX, mMinY, mMaxX, mMaxY;
+	
+	//XXX: refactor this?
 	private Vector<JPoint2D> mPoints;
 	private HashSet<JPoint2D> points;
 	private JImage mask;
 	
+	//XXX: kill this?
 	private int originalImageWidth;
 	private int originalImageHeight;
 	
 	private String name;
+	private int label;
 
 	public Building()
 	{
@@ -36,12 +42,15 @@ public class Building {
 		points = new HashSet<JPoint2D>();
 	}
 	
-	public Building(String name)
+	public Building(String name, int label)
 	{
 		this();
 		this.name = name;
+		this.label = label;
 	}
+
 	
+	//XXX: kill this?
 	public JImage getMask()
 	{
 		if(originalImageHeight==0){
@@ -58,6 +67,7 @@ public class Building {
 		return mask;
 	}
 	
+	//XXX: kill this/ refactor this?
 	/**
 	 * Find the distance between the centroid and the point the farthest away from it in the blob
 	 * @return
@@ -142,6 +152,7 @@ public class Building {
 	}
 	
 		
+	//XXX: kill this?
 	/**
 	 * Find the biggest blob from a list of blobs
 	 * @param jbs
@@ -179,6 +190,7 @@ public class Building {
 	}
 
 	
+	//XXX: kill this?
 	public JPoint2D getPointBelow(JPoint2D point)
 	{
 		if(point==null)
@@ -196,6 +208,7 @@ public class Building {
 		return new JPoint2D(x,maxY);
 	}
 	
+	//XXX: kill this?
 	/**
 	 * Return the percent withing a radius of the centroid that is part of the blob
 	 * @return
@@ -217,6 +230,7 @@ public class Building {
 		return percent;
 	}
 
+	//XXX: kill this?
 	public double getWidthHeightRatio()
 	{
 		return (double)getWidth()/ getHeight();
@@ -226,4 +240,21 @@ public class Building {
 	{
 		return this.name;
 	}
+	
+	private int getArea() {
+		return this.points.size();
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		//x click, y click, encoded integer, x center, y center, area, x upper left, y upper left, x lower right, y lower right, name.
+		return this.label+","+this.getCentroid().getX()+","+this.getCentroid().getY()+","+this.getArea()+","+mX+","+mY+","+ (mX+mWidth)+","+(mY+mHeight)+","+ this.name;
+		
+		
+	}
+
+	
 }

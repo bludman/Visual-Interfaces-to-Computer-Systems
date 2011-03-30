@@ -12,10 +12,16 @@ public class JMouseListener extends MouseInputAdapter {
 	private Rectangle currentRect;
 	private JImageDisplay display;
 	private Campus campus;
+	private Gui gui;
 	
-	public JMouseListener(JImageDisplay jid)
+	public JMouseListener(JImageDisplay display, Campus campus, Gui gui)
 	{
-		display = jid;
+		this.display = display;
+		this.campus = campus;
+		this.gui = gui;
+		
+		display.addMouseListener(this);
+	    display.addMouseMotionListener(this);
 	}
 	
 	public void mousePressed(MouseEvent e) {
@@ -32,11 +38,13 @@ public class JMouseListener extends MouseInputAdapter {
 		if(e.getButton() == MouseEvent.BUTTON3 )
 		{
 			System.out.println(x+","+y);
-			Building b =campus.getBuilding(y, x);
+			Building b = campus.getBuilding(y, x);
 			display.bluePoint=b.getCentroid();
+			gui.setStatusBar(x+","+y+","+ b.toString());
 			System.out.println(b.getName());
 			display.setSelectedRectangle(b.getBoundingBox());
-			display.repaint();
+			//display.repaint();
+			
 			
 		}
 	}
@@ -62,10 +70,4 @@ public class JMouseListener extends MouseInputAdapter {
 		display.repaint();
 		}
 	}
-	
-	public void setCampus(Campus campus)
-	{
-		this.campus = campus;
-	}
-
 }
