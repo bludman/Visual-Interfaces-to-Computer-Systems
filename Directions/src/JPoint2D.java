@@ -1,10 +1,12 @@
+import java.awt.geom.Point2D;
+
 /**
  * Represents a point in the x,y plane.
  *
  */
 public class JPoint2D 
 {
-	public int mX, mY;
+	private int mX, mY;
 
 	/** Constructor
 	 */
@@ -92,5 +94,20 @@ public class JPoint2D
 	public JPoint2D west()
 	{
 		return new JPoint2D(mX + 1, mY);
+	}
+	
+	public double angleTo(JPoint2D other)
+	{
+		double dX = other.getX()- this.getX();
+		double dY = -(other.getY() - this.getY());
+		return Math.toDegrees(Math.atan2(dY, dX));
+	}
+	
+	public double distanceTo(JPoint2D other)
+	{
+		Point2D a = new Point2D.Double(mX,mY);
+		Point2D b = new Point2D.Double(other.mX,other.mY);
+		return a.distance(b);
+		
 	}
 }

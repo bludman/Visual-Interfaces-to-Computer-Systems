@@ -4,7 +4,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+
 
 /**
  * 
@@ -18,7 +21,9 @@ public class Campus
 {
 	
 	private Map<Integer, Building> buildings;
+	private List<Building> buildingList;
 	private int[][] pixelToBuildingMap;
+	private List<Relation> relations;
 	JImage displayImage;
 	
 	public Campus(String campusName)
@@ -28,10 +33,13 @@ public class Campus
 		String nameTable = campusName+"-table.txt";
 		
 		buildings = new HashMap<Integer, Building>();
+		buildingList = new LinkedList<Building>();
 		
 		loadNames(nameTable);
 		buildBuildings(labeledCampus);
 		showBuildings(campus);
+		
+		generateGraph();
 	}
 
 	private void showBuildings(String campus) 
@@ -83,7 +91,10 @@ public class Campus
 				System.out.println(readRow);
 				String[] tokens = readRow.split("=");
 				//System.out.println("label: "+Integer.parseInt(tokens[LABEL])+" name: "+tokens[NAME].replace("\"", ""));
-				buildings.put(Integer.parseInt(tokens[LABEL]), new Building(tokens[NAME].replace("\"", ""),Integer.parseInt(tokens[LABEL])));
+				int label=Integer.parseInt(tokens[LABEL]);
+				Building b = new Building(tokens[NAME].replace("\"", ""),label);
+				buildings.put(label, b);
+				buildingList.add(b);
 			}
 		}
 		catch (IOException e)
@@ -134,19 +145,68 @@ public class Campus
 
 	}
 	
-	Building getBuilding(int row, int col)
+	public Building getBuilding(int row, int col)
 	{
 		return buildings.get(pixelToBuildingMap[row][col]);
 	}
 	
-	Building getBuilding(int label)
+	public Building getBuilding(int label)
 	{
 		return (Building)buildings.get(label);
 	}
 	
-	String getBuildingName(int label)
+	public String getBuildingName(int label)
 	{
 		return getBuilding(label).getName();
 	}
+	
+	public void generateGraph()
+	{
+//		relations = new LinkedList<Relation>();
+//		
+//		for(Building b: buildingList)
+//		{
+//			for(Building b2: buildingList)
+//			{
+//				if(b!=b2)
+//				{
+//					relations.addAll(Classifier.generateRelations(b,b2));
+//				}
+//			}
+//		}
+//		
+		relations = new LinkedList<Relation>();
+		
+		
+//		relations = Relation.generateNorthRelations(buildingList);
+//		
+//		System.out.println("*** Full relation list: ("+relations.size()+") ***\n\n");
+//		for(Relation r: relations)
+//			System.out.println(r);
+//		
+//		relations = Relation.transitiveReduction(relations,buildingList);
+//		System.out.println("\n\n\n*** Reduced relation list: ("+relations.size()+") ***\n\n");
+//		for(Relation r: relations)
+//			System.out.println(r);
+//		
+		
+		
+		relations.addAll(Relation.transitiveReduction(Relation.generateNorthRelations(buildingList),buildingList));
+		relations.addAll(Relation.transitiveReduction(Relation.generateSouthRelations(buildingList),buildingList));
+		relations.addAll(Relation.transitiveReduction(Relation.generateEastRelations(buildingList),buildingList));
+		relations.addAll(Relation.transitiveReduction(Relation.generateWestRelations(buildingList),buildingList));
+		//relations.addAll(Relation.transitiveReduction(Relation.generateNearRelations(buildingList),buildingList));
+		relations.addAll(Relation.generateNearRelations(buildingList));
+
+		System.out.println("\n\n\n*** Reduced total relation list: ("+relations.size()+") ***\n\n");
+		for(Relation r: relations)
+			System.out.println(r);
+		
+		
+	}
+	
+	
+	
+	
 
 }

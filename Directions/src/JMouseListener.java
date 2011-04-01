@@ -33,6 +33,16 @@ public class JMouseListener extends MouseInputAdapter {
 			//System.out.println("Updating");
 			currentRect = new Rectangle(x, y, 0, 0);
 			updateSize(e);
+			
+			if(gui.getMode()==Gui.MODES.PICKING_START_POINT){
+				gui.setStartPoint(x,y);
+				//gui.setMode(Gui.MODES.PICKING_END_POINT);
+			}else if(gui.getMode()==Gui.MODES.PICKING_END_POINT){
+				gui.setEndPoint(x,y);
+				//gui.setMode(Gui.MODES.PICKING_START_POINT);
+			}
+			gui.togglePicking();
+			
 		}
 		
 		if(e.getButton() == MouseEvent.BUTTON3 )

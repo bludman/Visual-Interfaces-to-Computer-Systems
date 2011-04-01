@@ -67,16 +67,13 @@ public class Building {
 		return mask;
 	}
 	
-	//XXX: kill this/ refactor this?
 	/**
-	 * Find the distance between the centroid and the point the farthest away from it in the blob
+	 * Define the radius of a building as the radius of the circle that circumscribes the bounding box of the building
 	 * @return
 	 */
 	public int findRadius()
 	{
-		// Note: for the purposes of this function now, getting the distance between the centroid
-		// and furthest horizontal edge is much faster and sufficiently accurate.
-		return Math.abs(getCentroid().getY() - getY());
+		return (int)Math.round(Math.sqrt(mWidth*mWidth+mHeight*mHeight)/2);
 	}
 	
 	public void addPoint(JPoint2D p)
