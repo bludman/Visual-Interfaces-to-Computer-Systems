@@ -1,4 +1,3 @@
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,19 +9,36 @@ import java.util.List;
  */
 
 /**
+ * Stores the relation of two buildings.
+ * Relations should be thought of as:
+ * 		discriptee is preposition of/to landmark
+ * 			OR
+ * 		preposition of/to lanmark is discpritee
  * @author Ben
  *
  */
 public class Relation {
 
-	private Classifier.directions direction;
-	private Building a,b;
+	private Classifier.Preposition preposition;
+	private Building landmark,//a
+		descriptee;//b
+	double distance;
 	
-	public Relation(Classifier.directions direction, Building a, Building b) 
+	/**
+	 * Relations should be thought of as:
+	 * 		discriptee is preposition of/to landmark
+	 * 			OR
+	 * 		preposition of/to lanmark is discpritee
+	 * @param preposition how the two buildings are related
+	 * @param landmark a reference point for the descriptee
+	 * @param descriptee the building being described
+	 */
+	public Relation(Classifier.Preposition preposition, Building landmark, Building descriptee) 
 	{
-		this.direction = direction;
-		this.a = a;
-		this.b = b;
+		this.preposition = preposition;
+		this.landmark = landmark;
+		this.descriptee = descriptee;
+		this.distance = landmark.distanceTo(descriptee);
 	}
 
 
@@ -46,7 +62,7 @@ public class Relation {
 					continue;
 				
 				if(Classifier.northOfAisB(a, b))
-					relations.add(new Relation(Classifier.directions.NORTH,a,b));
+					relations.add(new Relation(Classifier.Preposition.NORTH,a,b));
 			}
 		}
 		
@@ -67,7 +83,7 @@ public class Relation {
 					continue;
 				
 				if(Classifier.southOfAisB(a, b))
-					relations.add(new Relation(Classifier.directions.SOUTH,a,b));
+					relations.add(new Relation(Classifier.Preposition.SOUTH,a,b));
 			}
 		}
 		
@@ -88,7 +104,7 @@ public class Relation {
 					continue;
 				
 				if(Classifier.eastOfAisB(a, b))
-					relations.add(new Relation(Classifier.directions.EAST,a,b));
+					relations.add(new Relation(Classifier.Preposition.EAST,a,b));
 			}
 		}
 		
@@ -109,7 +125,7 @@ public class Relation {
 					continue;
 				
 				if(Classifier.westOfAisB(a, b))
-					relations.add(new Relation(Classifier.directions.WEST,a,b));
+					relations.add(new Relation(Classifier.Preposition.WEST,a,b));
 			}
 		}
 		
@@ -130,7 +146,7 @@ public class Relation {
 					continue;
 				
 				if(Classifier.nearToAisB(a, b))
-					relations.add(new Relation(Classifier.directions.NEAR,a,b));
+					relations.add(new Relation(Classifier.Preposition.NEAR,a,b));
 			}
 		}
 		
@@ -147,8 +163,8 @@ public class Relation {
 			boolean canBeInferred = false;
 			for(Building c: buildings)
 			{
-				Relation intermediateRelation1 = new Relation(r.getType(), r.getA(), c);
-				Relation intermediateRelation2 = new Relation(r.getType(), c, r.getB());
+				Relation intermediateRelation1 = new Relation(r.getType(), r.getLandmark(), c);
+				Relation intermediateRelation2 = new Relation(r.getType(), c, r.getDescriptee());
 
 				if(relationSet.contains(intermediateRelation1) && relationSet.contains(intermediateRelation2))
 				{
@@ -189,16 +205,16 @@ public class Relation {
 	// 	Getters/ Setters
 	//------------------------------------------------------
 	
-	private Building getB() {
-		return this.b;
+	public Building getDescriptee() { //was getB()
+		return this.descriptee;
 	}
 
-	private Building getA() {
-		return this.a;
+	public Building getLandmark() { //was getA()
+		return this.landmark;
 	}
 
-	private Classifier.directions getType() {
-		return this.direction;
+	public Classifier.Preposition getType() {
+		return this.preposition;
 	}
 
 	
@@ -213,10 +229,10 @@ public class Relation {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((a == null) ? 0 : a.hashCode());
-		result = prime * result + ((b == null) ? 0 : b.hashCode());
+		result = prime * result + ((landmark == null) ? 0 : landmark.hashCode());
+		result = prime * result + ((descriptee == null) ? 0 : descriptee.hashCode());
 		result = prime * result
-				+ ((direction == null) ? 0 : direction.hashCode());
+				+ ((preposition == null) ? 0 : preposition.hashCode());
 		return result;
 	}
 
@@ -232,20 +248,20 @@ public class Relation {
 		if (getClass() != obj.getClass())
 			return false;
 		Relation other = (Relation) obj;
-		if (a == null) {
-			if (other.a != null)
+		if (landmark == null) {
+			if (other.landmark != null)
 				return false;
-		} else if (!a.equals(other.a))
+		} else if (!landmark.equals(other.landmark))
 			return false;
-		if (b == null) {
-			if (other.b != null)
+		if (descriptee == null) {
+			if (other.descriptee != null)
 				return false;
-		} else if (!b.equals(other.b))
+		} else if (!descriptee.equals(other.descriptee))
 			return false;
-		if (direction == null) {
-			if (other.direction != null)
+		if (preposition == null) {
+			if (other.preposition != null)
 				return false;
-		} else if (!direction.equals(other.direction))
+		} else if (!preposition.equals(other.preposition))
 			return false;
 		return true;
 	}
@@ -255,6 +271,28 @@ public class Relation {
 	 */
 	@Override
 	public String toString() {
-		return direction+" to "+a.getName()+" is "+b.getName();
+		String to_of = preposition==Classifier.Preposition.NEAR ? " to " : " of ";
+		return preposition+to_of+landmark.getName()+" is "+descriptee.getName();
 	}
+	
+	public String toDescription()
+	{
+		String to_of = preposition==Classifier.Preposition.NEAR ? " to " : " of ";
+		return descriptee.getName()+" is "+preposition+to_of+landmark.getName();
+	}
+	
+	public String toCompactDescription()
+	{
+		String to_of = preposition==Classifier.Preposition.NEAR ? " to " : " of ";
+		return preposition+to_of+landmark.getName();
+	}
+
+
+
+
+	public String getTypeWithPrep() {
+		String to_of = preposition==Classifier.Preposition.NEAR ? " to " : " of ";
+		return preposition+to_of;
+	}
+	
 }

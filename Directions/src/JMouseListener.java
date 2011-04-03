@@ -52,6 +52,7 @@ public class JMouseListener extends MouseInputAdapter {
 			display.bluePoint=b.getCentroid();
 			gui.setStatusBar(x+","+y+","+ b.toString());
 			System.out.println(b.getName());
+			System.out.println(campus.descriptionOfBuilding(b));
 			display.setSelectedRectangle(b.getBoundingBox());
 			//display.repaint();
 			

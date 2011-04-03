@@ -253,5 +253,14 @@ public class Building {
 		
 	}
 
+	/**
+	 * Define the distance between two buildings as the distance between their centroids
+	 * @param that
+	 * @return
+	 */
+	public double distanceTo(Building that) {
+		return this.getCentroid().distanceTo(that.getCentroid());
+	}
+
 	
 }

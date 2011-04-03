@@ -15,7 +15,7 @@ public class Classifier
 	
 	private static final int MIN = 0;
 	private static final int MAX = 1;
-	public enum directions{NORTH,EAST,SOUTH,WEST,NEAR};
+	public enum Preposition{NORTH,EAST,SOUTH,WEST,NEAR};
 	private static double range[][]= new double[][]{
 		{30,150},	//{45,135}, 	//N
 		{-60,60},	//{-45,45},	//E
@@ -31,7 +31,7 @@ public class Classifier
 	public static boolean northOfAisB(JPoint2D aCenter, JPoint2D bCenter)
 	{
 		double angle = aCenter.angleTo(bCenter);
-		return range[directions.NORTH.ordinal()][MIN]<angle && angle<=range[directions.NORTH.ordinal()][MAX];
+		return range[Preposition.NORTH.ordinal()][MIN]<angle && angle<=range[Preposition.NORTH.ordinal()][MAX];
 	}
 	
 	public static boolean northOfAisB(Building a, Building b) {
@@ -53,7 +53,7 @@ public class Classifier
 	 */
 	private static boolean southOfAisB(JPoint2D aCenter, JPoint2D bCenter) {
 		double angle = aCenter.angleTo(bCenter);
-		return range[directions.SOUTH.ordinal()][MIN]<angle && angle<=range[directions.SOUTH.ordinal()][MAX];
+		return range[Preposition.SOUTH.ordinal()][MIN]<angle && angle<=range[Preposition.SOUTH.ordinal()][MAX];
 	}
 	public static boolean eastOfAisB(Building a, Building b) {
 		JPoint2D aCenter = a.getCentroid();
@@ -70,8 +70,8 @@ public class Classifier
 	private static boolean eastOfAisB(JPoint2D aCenter, JPoint2D bCenter) {
 		double angle = aCenter.angleTo(bCenter);
 		return 
-			(0>=angle && angle>range[directions.EAST.ordinal()][MIN]) ||
-			(0<=angle && angle<=range[directions.EAST.ordinal()][MAX]);
+			(0>=angle && angle>range[Preposition.EAST.ordinal()][MIN]) ||
+			(0<=angle && angle<=range[Preposition.EAST.ordinal()][MAX]);
 	}
 	
 	public static boolean westOfAisB(Building a, Building b) {
@@ -88,8 +88,8 @@ public class Classifier
 	private static boolean westOfAisB(JPoint2D aCenter, JPoint2D bCenter) {
 		double angle = aCenter.angleTo(bCenter);
 		return 
-			(180>=angle && angle>range[directions.WEST.ordinal()][MAX]) ||
-			(-180<=angle && angle<=range[directions.WEST.ordinal()][MIN]);
+			(180>=angle && angle>range[Preposition.WEST.ordinal()][MAX]) ||
+			(-180<=angle && angle<=range[Preposition.WEST.ordinal()][MIN]);
 	}
 	
 	public static boolean nearToAisB(Building a, Building b) {
@@ -119,7 +119,7 @@ public class Classifier
 					continue;
 				
 				if(northOfAisB(a, b))
-					relations.add(new Relation(directions.NORTH,a,b));
+					relations.add(new Relation(Preposition.NORTH,a,b));
 			}
 		}
 		

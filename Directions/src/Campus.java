@@ -3,10 +3,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 
 
 /**
@@ -205,7 +209,43 @@ public class Campus
 		
 	}
 	
-	
+	public String descriptionOfBuilding(Building b)
+	{
+		
+		return new BuildingDescription(b, relations).toString();
+		
+		
+//		ArrayList<Relation> description = new ArrayList<Relation>();
+//		
+//		for(Relation r : relations)
+//			if(r.getDescriptee().equals(b))
+//				description.add(r);
+//		
+//		Collections.sort(description, new Comparator<Relation>() {
+//		    public int compare(Relation o1, Relation o2) {
+//		        return o1.getLandmark().getName().compareTo(o2.getLandmark().getName());
+//		    }});
+//		
+//		StringBuilder builder = new StringBuilder();
+//		
+//		
+//		builder.append(b.getName()).append(" is:\n");
+////		for(Relation r : description)
+////			builder.append("\n\t").append(r.toCompactDescription());	
+//		
+//		for(int i= 0; i<description.size();i++)
+//		{
+//			builder.append(description.get(i).getTypeWithPrep());
+//			if(i+1<description.size() && description.get(i).getLandmark() == description.get(i+1).getLandmark())
+//				builder.append("and ");
+//			else
+//				builder.append(description.get(i).getLandmark().getName()).append("\n\t");
+//			
+//		}
+//		
+//			
+//		return builder.toString();
+	}
 	
 	
 
