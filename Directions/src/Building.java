@@ -13,6 +13,9 @@ public class Building {
 
 	private int mX, mY, mWidth, mHeight;  // bounding box; (x,y) is upper-left corner
 	private int mMinX, mMinY, mMaxX, mMaxY;
+	private JPoint2D centroid;
+	private boolean validCentroid;
+	
 	
 	//XXX: refactor this?
 	private Vector<JPoint2D> mPoints;
@@ -37,6 +40,8 @@ public class Building {
 		mMinY = mMinX;
 		mMaxX = Integer.MIN_VALUE;
 		mMaxY = mMaxX;
+		
+		validCentroid = false;
 		
 		mPoints = new Vector<JPoint2D>();
 		points = new HashSet<JPoint2D>();
@@ -79,6 +84,7 @@ public class Building {
 	public void addPoint(JPoint2D p)
 	{
 		addPoint(p.getX(), p.getY());
+		
 	}
 	
 	public void addPoint(int x, int y)
@@ -95,6 +101,8 @@ public class Building {
 		mY = mMinY;
 		mWidth = mMaxX - mMinX + 1;
 		mHeight = mMaxY - mMinY + 1;
+		
+		this.validCentroid = false;
 	}
 	
 	public int getNumPoints()
@@ -129,12 +137,20 @@ public class Building {
 	
 	public JPoint2D getCentroid()
 	{
-		//TODO: This should be refactored to cache the centroid between calls
+		if(!validCentroid)
+			calculateCentroid();
+			
+		return new JPoint2D(this.centroid);
+	}
+	
+	
+	private void calculateCentroid()
+	{
 		int xSum=0;
 		int ySum=0;
 		
 		if (mPoints.size() == 0)
-			return null;
+			this.centroid = null;
 		
 		for(JPoint2D p: mPoints)
 		{
@@ -145,9 +161,9 @@ public class Building {
 		xSum /= mPoints.size();
 		ySum /= mPoints.size();
 		
-		return new JPoint2D(xSum,ySum);
+		this.validCentroid = true;
+		this.centroid = new JPoint2D(xSum, ySum);
 	}
-	
 		
 	//XXX: kill this?
 	/**

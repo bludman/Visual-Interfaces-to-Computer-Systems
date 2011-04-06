@@ -48,6 +48,9 @@ public class Relation {
 	// 	Relation Generators
 	//------------------------------------------------------
 	
+	/**
+	 * Generate a list of relations that satisfy the preposition
+	 */
 	public static List<Relation> generateNorthRelations(List<Building> buildings) 
 	{
 		List<Relation> relations = new LinkedList<Relation>();
@@ -153,6 +156,12 @@ public class Relation {
 		return relations;
 	}
 	
+	/**
+	 * 
+	 * @param allRelations the graph to be reduced
+	 * @param buildings buildings that can be used as intermediate nodes between 2 linked nodes
+	 * @return
+	 */
 	public static List<Relation> transitiveReduction(List<Relation> allRelations,List<Building> buildings) {
 		List<Relation> retainedRelations = new LinkedList<Relation>();
 		HashSet<Relation> relationSet = new HashSet<Relation>();

@@ -41,19 +41,27 @@ public class JMouseListener extends MouseInputAdapter {
 				gui.setEndPoint(x,y);
 				//gui.setMode(Gui.MODES.PICKING_START_POINT);
 			}
-			gui.togglePicking();
+			this.gui.togglePicking();
 			
 		}
 		
 		if(e.getButton() == MouseEvent.BUTTON3 )
 		{
-			System.out.println(x+","+y);
-			Building b = campus.getBuilding(y, x);
-			display.bluePoint=b.getCentroid();
-			gui.setStatusBar(x+","+y+","+ b.toString());
-			System.out.println(b.getName());
-			System.out.println(campus.descriptionOfBuilding(b));
-			display.setSelectedRectangle(b.getBoundingBox());
+			
+			/*Identify building */
+//			System.out.println(x+","+y);
+//			Building b = campus.getBuilding(y, x);
+//			display.bluePoint=b.getCentroid();
+//			gui.setStatusBar(x+","+y+","+ b.toString());
+//			System.out.println(b.getName());
+//			System.out.println(campus.descriptionOfBuilding(b));
+			
+			System.out.println("Dynamic Description:");
+			System.out.println(campus.buildDynamicDescription(new JPoint2D(x,y)));
+			System.out.println("*****");
+			
+			
+			//display.setSelectedRectangle(b.getBoundingBox());
 			//display.repaint();
 			
 			
@@ -81,4 +89,22 @@ public class JMouseListener extends MouseInputAdapter {
 		display.repaint();
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseMoved(MouseEvent e) 
+	{
+		super.mouseMoved(e);
+		int x = e.getX();
+		int y = e.getY();
+		
+		Building b = campus.getBuilding(y, x);
+		if(b!=null)
+			gui.setTitle(b.getName());
+		
+	}
+	
+	
 }

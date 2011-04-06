@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import javax.swing.*;
 
@@ -30,6 +32,8 @@ public class JImageDisplay extends JPanel {
 	
 	private Building trackedBlob;
 	
+	private Set<JPoint2D> greenField;
+	
 	//tracked points
 	public JPoint2D redPoint;
 	public JPoint2D bluePoint;
@@ -52,6 +56,8 @@ public class JImageDisplay extends JPanel {
 //	    addMouseMotionListener(mouseListener);
 //	    mouseListener.setCampus(campus);
 	    
+		greenField = new HashSet<JPoint2D>();
+		
 	    //add key listener to the JPanel
 	    setFocusable(true);
 	    rect = new Rectangle();
@@ -84,8 +90,10 @@ public class JImageDisplay extends JPanel {
 	 * Drawing an image can allow for more
 	 * flexibility in processing/editing.
 	 */
-	protected void paintComponent(Graphics g) 
+	protected void paintComponent(Graphics g1) 
 	{
+		Graphics2D g = (Graphics2D)g1;
+		
 		// Center image in this component.
 		int x = 0;
 		int y = 0;
@@ -110,6 +118,11 @@ public class JImageDisplay extends JPanel {
 		{
 			g.setColor(Color.blue);
 			g.fillOval(bluePoint.getX()-RADIUS, bluePoint.getY()-RADIUS, RADIUS*2, RADIUS*2);
+		}
+		
+		for(JPoint2D p: greenField)
+		{
+			
 		}
 	}
 

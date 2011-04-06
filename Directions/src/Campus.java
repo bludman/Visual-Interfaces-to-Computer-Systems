@@ -3,13 +3,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 
@@ -24,11 +25,20 @@ import java.util.Map;
 public class Campus 
 {
 	
+	/** Map labels to building objects */
 	private Map<Integer, Building> buildings;
+	
+	/** List of the buildings */
 	private List<Building> buildingList;
+	
+	/** Map pixels to building labels */
 	private int[][] pixelToBuildingMap;
+	
+	/** List of the connectivity graph of buildings */
 	private List<Relation> relations;
-	JImage displayImage;
+	
+	/** Binary image suitable for displaying the campus */
+	private JImage displayImage;
 	
 	public Campus(String campusName)
 	{
@@ -41,12 +51,16 @@ public class Campus
 		
 		loadNames(nameTable);
 		buildBuildings(labeledCampus);
-		showBuildings(campus);
+		buildBuildingDisplay(campus);
 		
 		generateGraph();
 	}
 
-	private void showBuildings(String campus) 
+	/**
+	 * Build an image of the campus suitable for display
+	 * @param campus filename for unlabled image binary image
+	 */
+	private void buildBuildingDisplay(String campus) 
 	{
 		PicData data = new PicData(campus);
 		data.Dim = 3;
@@ -120,37 +134,37 @@ public class Campus
 				//Closing the file, so ok to suppress this- we don't care if it fails 
 			}
 		}
-
-		
 	}
 
+	/**
+	 * Build the buildings from a labeled image file
+	 * @param labeledCampus filename containing labeled images
+	 */
 	private void buildBuildings(String labeledCampus) 
 	{
-		
 		PicData data = new PicData(labeledCampus);
 		data.Dim = 2;
 		Pgm.read(data);
 		pixelToBuildingMap = new int[data.Y][data.X];
 		
-			
 		int offset=128;
 		
 		for(int row = 0;row<data.Y;row++){
 			for(int col=0;col<data.X;col++){
 				int label = data.data2D[col][row]+offset;
-				int[] pixel = new int[]{label,label,label};
+				//int[] pixel = new int[]{label,label,label};
 				pixelToBuildingMap[row][col]= label;
 				getBuilding(label).addPoint(col, row);
-				
 			}
 			System.out.print("\n");
 		}
-				
-
 	}
 	
 	public Building getBuilding(int row, int col)
 	{
+		if(row>=pixelToBuildingMap.length || col>= pixelToBuildingMap[0].length)
+			return null;
+		
 		return buildings.get(pixelToBuildingMap[row][col]);
 	}
 	
@@ -164,89 +178,130 @@ public class Campus
 		return getBuilding(label).getName();
 	}
 	
+	
+	/**
+
+	 */
 	public void generateGraph()
 	{
-//		relations = new LinkedList<Relation>();
-//		
-//		for(Building b: buildingList)
-//		{
-//			for(Building b2: buildingList)
-//			{
-//				if(b!=b2)
-//				{
-//					relations.addAll(Classifier.generateRelations(b,b2));
-//				}
-//			}
-//		}
-//		
-		relations = new LinkedList<Relation>();
 		
-		
-//		relations = Relation.generateNorthRelations(buildingList);
-//		
-//		System.out.println("*** Full relation list: ("+relations.size()+") ***\n\n");
-//		for(Relation r: relations)
-//			System.out.println(r);
-//		
-//		relations = Relation.transitiveReduction(relations,buildingList);
-//		System.out.println("\n\n\n*** Reduced relation list: ("+relations.size()+") ***\n\n");
-//		for(Relation r: relations)
-//			System.out.println(r);
-//		
-		
-		
-		relations.addAll(Relation.transitiveReduction(Relation.generateNorthRelations(buildingList),buildingList));
-		relations.addAll(Relation.transitiveReduction(Relation.generateSouthRelations(buildingList),buildingList));
-		relations.addAll(Relation.transitiveReduction(Relation.generateEastRelations(buildingList),buildingList));
-		relations.addAll(Relation.transitiveReduction(Relation.generateWestRelations(buildingList),buildingList));
-		//relations.addAll(Relation.transitiveReduction(Relation.generateNearRelations(buildingList),buildingList));
-		relations.addAll(Relation.generateNearRelations(buildingList));
+		this.relations = generateRelations(buildingList);
 
 		System.out.println("\n\n\n*** Reduced total relation list: ("+relations.size()+") ***\n\n");
 		for(Relation r: relations)
 			System.out.println(r);
-		
+		System.out.println("************\n\n\n\n");
 		
 	}
+
+	/**
+	 * Build the connectivity graph of all the given buildings by creating the fully connected 
+	 * graph of all the buildings for each preposition and then trimming off redundent 
+	 * relations (transitive reduction) for each preposition (except near which is not considered transitive)
+	 * @param listOfBuildings
+	 * @return
+	 */
+	private static List<Relation> generateRelations(List<Building> listOfBuildings) {
+		
+		List<Relation> graph = new LinkedList<Relation>();
+		
+		List<Relation> fullNorthRelations = Relation.generateNorthRelations(listOfBuildings);
+		graph.addAll(Relation.transitiveReduction(fullNorthRelations,listOfBuildings));
+		
+		graph.addAll(Relation.transitiveReduction(Relation.generateSouthRelations(listOfBuildings),listOfBuildings));
+		graph.addAll(Relation.transitiveReduction(Relation.generateEastRelations(listOfBuildings),listOfBuildings));
+		graph.addAll(Relation.transitiveReduction(Relation.generateWestRelations(listOfBuildings),listOfBuildings));
+		
+		//relations.addAll(Relation.transitiveReduction(Relation.generateNearRelations(listOfBuildings),listOfBuildings));
+		graph.addAll(Relation.generateNearRelations(listOfBuildings));
+		
+		return graph;
+	}
 	
-	public String descriptionOfBuilding(Building b)
+	/**
+	 * Generate the description of a building using the known campus connectivity graph
+	 * @param b
+	 * @return
+	 */
+	public BuildingDescription descriptionOfBuilding(Building b)
 	{
-		
-		return new BuildingDescription(b, relations).toString();
-		
-		
-//		ArrayList<Relation> description = new ArrayList<Relation>();
-//		
-//		for(Relation r : relations)
-//			if(r.getDescriptee().equals(b))
-//				description.add(r);
-//		
-//		Collections.sort(description, new Comparator<Relation>() {
-//		    public int compare(Relation o1, Relation o2) {
-//		        return o1.getLandmark().getName().compareTo(o2.getLandmark().getName());
-//		    }});
-//		
-//		StringBuilder builder = new StringBuilder();
-//		
-//		
-//		builder.append(b.getName()).append(" is:\n");
-////		for(Relation r : description)
-////			builder.append("\n\t").append(r.toCompactDescription());	
-//		
-//		for(int i= 0; i<description.size();i++)
-//		{
-//			builder.append(description.get(i).getTypeWithPrep());
-//			if(i+1<description.size() && description.get(i).getLandmark() == description.get(i+1).getLandmark())
-//				builder.append("and ");
-//			else
-//				builder.append(description.get(i).getLandmark().getName()).append("\n\t");
-//			
-//		}
-//		
-//			
-//		return builder.toString();
+		return new BuildingDescription(b, relations);
 	}
 	
+	/**
+	 * Generate the description of a building using a given connectivity graph
+	 * @param b
+	 * @param connectivity
+	 * @return
+	 */
+	public BuildingDescription descriptionOfBuilding(Building b, List<Relation> connectivity)
+	{
+		return new BuildingDescription(b, connectivity);
+	}
+	
+	/**
+	 * Get a set of points with the same description as a seed point
+	 * @param seed
+	 * @return
+	 */
+	private Set<JPoint2D> getSimilarPoints(JPoint2D seed)
+	{
+		HashSet<JPoint2D> points = new HashSet<JPoint2D>();
+		int x=seed.getX();
+		int y=seed.getY();
+		
+		BuildingDescription seedDescription = buildDynamicDescription(seed);
+		
+		int offset = 20;
+		for(int i= x-offset;i<x+offset;i++)
+			for(int j=y-offset;j<y+offset;j++)
+			{
+				JPoint2D testPoint = new JPoint2D(i, j);
+				if(seedDescription.equals(buildDynamicDescription(testPoint)))
+					points.add(testPoint);
+			}
+		
+		
+		
+		return points;
+	}
+	
+	public JImage getColoredDisplay(JPoint2D start, JPoint2D goal)
+	{
+		final int[] green = {0,255,0};
+		final int[] red = {255,0,0};
+		
+		JImage im = new JImage(this.displayImage);
+		Set<JPoint2D> greenPoints = getSimilarPoints(start);
+		Set<JPoint2D> redPoints = getSimilarPoints(goal);
+		
+		if(greenPoints!=null)
+			for(JPoint2D p :  greenPoints)
+				im.setPixel(p.getX(), p.getY(), green);
+		
+		if(redPoints!=null)
+			for(JPoint2D p :  redPoints)
+				im.setPixel(p.getX(), p.getY(), red);
+		
+		
+		return im;
+	}
+
+	public JImage getDisplayImage() {
+		return new JImage(this.displayImage);
+	}
+	
+	public BuildingDescription  buildDynamicDescription(JPoint2D point)
+	{
+		Building b = new Building("Dynamic",-1);
+		b.addPoint(point);
+		
+		List<Building> buildings = new ArrayList<Building>(buildingList);
+		buildings.add(b);
+		
+		List<Relation> connectivity = generateRelations(buildings);
+		return descriptionOfBuilding(b, connectivity);
+	}
 	
 
 }

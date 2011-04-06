@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -23,6 +24,8 @@ public class Gui {
 	private MODES mode = MODES.PICKING_START_POINT;
 	
 	private JPoint2D startPoint, endPoint;
+	
+	private JImageDisplay display;
 	
 	public Gui()
 	{
@@ -67,8 +70,8 @@ public class Gui {
 		
 		
 		campus = new Campus("ass3");
-		JImageDisplay display = new JImageDisplay(campus);
-		display.updateImage(campus.displayImage.getBufferedImage());
+		display = new JImageDisplay(campus);
+		display.updateImage(campus.getDisplayImage().getBufferedImage());
 		panel.add(display, BorderLayout.CENTER);
 		
 		
@@ -127,6 +130,7 @@ public class Gui {
 	public void setStartPoint(int x, int y) {
 		this.startPoint = new JPoint2D(x,y);
 		startPointValue.setText(startPoint.toString());
+		showColoredImage();
 	}
 
 	public void setEndPoint(int x, int y) {
@@ -134,6 +138,19 @@ public class Gui {
 		endPointValue.setText(endPoint.toString());
 		System.out.println(startPoint.angleTo(endPoint));
 		System.out.println(Classifier.direction(startPoint, endPoint));
+		showColoredImage();
+	}
+	
+	public void showColoredImage()
+	{
+		if(this.startPoint==null || this.endPoint==null)
+			return;
+		
+		this.display.updateImage(campus.getColoredDisplay(this.startPoint, this.endPoint).getBufferedImage());
 	}
 
+	public void setTitle(String title)
+	{
+		this.frame.setTitle("Campus explorer: "+title);
+	}
 }

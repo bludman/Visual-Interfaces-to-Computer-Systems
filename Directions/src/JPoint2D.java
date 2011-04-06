@@ -24,6 +24,11 @@ public class JPoint2D
 		mY = y;
 	}
 	
+	public JPoint2D(JPoint2D that) {
+		this.mX = that.mX;
+		this.mY = that.mY;
+	}
+
 	/** Converts the information to a string for easier reading.
 	 * @return the string value
 	 */
