@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,7 +52,7 @@ public class BuildingDescription {
 
 	public BuildingDescription(Building b, List<Relation> connections) {
 		this.building = b;
-		ArrayList<Relation> relevantRelations = new ArrayList<Relation>();
+		relevantRelations = new ArrayList<Relation>();
 		
 		//collect relevant relations from connectivity graph
 		for(Relation r : connections)
@@ -88,6 +89,11 @@ public class BuildingDescription {
 	@Override
 	public String toString() {
 		return this.description;
+	}
+
+	public Collection<Relation> getRelations() 
+	{
+		return (Collection<Relation>) this.relevantRelations.clone();
 	}
 	
 	

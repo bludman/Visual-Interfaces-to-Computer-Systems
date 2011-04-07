@@ -246,6 +246,25 @@ public class Campus
 	 */
 	private Set<JPoint2D> getSimilarPoints(JPoint2D seed)
 	{
+		//return similarPoints1(seed);
+		return similarPoints2(seed);
+	}
+
+	private Set<JPoint2D> similarPoints2(JPoint2D seed) {
+		HashSet<JPoint2D> points = new HashSet<JPoint2D>();
+		int x=seed.getX();
+		int y=seed.getY();
+		
+		BuildingDescription seedDescription = buildDynamicDescription(seed);
+		
+		return null;
+	}
+
+	/**
+	 * @param seed
+	 * @return
+	 */
+	private Set<JPoint2D> similarPoints1(JPoint2D seed) {
 		HashSet<JPoint2D> points = new HashSet<JPoint2D>();
 		int x=seed.getX();
 		int y=seed.getY();
@@ -271,17 +290,33 @@ public class Campus
 		final int[] green = {0,255,0};
 		final int[] red = {255,0,0};
 		
-		JImage im = new JImage(this.displayImage);
-		Set<JPoint2D> greenPoints = getSimilarPoints(start);
-		Set<JPoint2D> redPoints = getSimilarPoints(goal);
+//		JImage im = new JImage(this.displayImage);
+//
+//		Set<JPoint2D> greenPoints = getSimilarPoints(start);
+//		Set<JPoint2D> redPoints = getSimilarPoints(goal);
+//		
+//		if(greenPoints!=null)
+//			for(JPoint2D p :  greenPoints)
+//				im.setPixel(p.getX(), p.getY(), green);
+//		
+//		if(redPoints!=null)
+//			for(JPoint2D p :  redPoints)
+//				im.setPixel(p.getX(), p.getY(), red);
 		
-		if(greenPoints!=null)
-			for(JPoint2D p :  greenPoints)
-				im.setPixel(p.getX(), p.getY(), green);
 		
-		if(redPoints!=null)
-			for(JPoint2D p :  redPoints)
-				im.setPixel(p.getX(), p.getY(), red);
+		boolean[][] sMask=Classifier.createMask(this.displayImage.getHeight(), this.displayImage.getWidth());
+		BuildingDescription sDescription = buildDynamicDescription(start);
+		Classifier.mask(sMask, sDescription.getRelations());
+		JImage sIm = Classifier.maskToImage(sMask, green,displayImage.copy());
+		
+		boolean[][] gMask=Classifier.createMask(this.displayImage.getHeight(), this.displayImage.getWidth());
+		BuildingDescription gDescription = buildDynamicDescription(goal);
+		Classifier.mask(gMask, gDescription.getRelations());
+		
+		JImage im = Classifier.maskToImage(gMask, red,sIm);
+		
+
+		
 		
 		
 		return im;

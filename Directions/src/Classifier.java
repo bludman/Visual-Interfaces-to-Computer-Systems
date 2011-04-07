@@ -28,12 +28,14 @@ public class Classifier
 	
 	}
 	
+	
+	
+	
 	public static boolean northOfAisB(JPoint2D aCenter, JPoint2D bCenter)
 	{
 		double angle = aCenter.angleTo(bCenter);
 		return range[Preposition.NORTH.ordinal()][MIN]<angle && angle<=range[Preposition.NORTH.ordinal()][MAX];
 	}
-	
 	public static boolean northOfAisB(Building a, Building b) {
 		JPoint2D aCenter = a.getCentroid();
 		JPoint2D bCenter = b.getCentroid();
@@ -45,7 +47,6 @@ public class Classifier
 		JPoint2D bCenter = b.getCentroid();
 		return southOfAisB(aCenter, bCenter);
 	}
-
 	/**
 	 * @param aCenter
 	 * @param bCenter
@@ -55,13 +56,14 @@ public class Classifier
 		double angle = aCenter.angleTo(bCenter);
 		return range[Preposition.SOUTH.ordinal()][MIN]<angle && angle<=range[Preposition.SOUTH.ordinal()][MAX];
 	}
+	
+
 	public static boolean eastOfAisB(Building a, Building b) {
 		JPoint2D aCenter = a.getCentroid();
 		JPoint2D bCenter = b.getCentroid();
 		return eastOfAisB(aCenter, bCenter);
 	
 	}
-
 	/**
 	 * @param aCenter
 	 * @param bCenter
@@ -79,7 +81,6 @@ public class Classifier
 		JPoint2D bCenter = b.getCentroid();
 		return westOfAisB(aCenter, bCenter);
 	}
-
 	/**
 	 * @param aCenter
 	 * @param bCenter
@@ -95,7 +96,6 @@ public class Classifier
 	public static boolean nearToAisB(Building a, Building b) {
 		return nearToAisB(a, b.getCentroid());
 	}
-	
 	public static boolean nearToAisB(Building a, JPoint2D b) {
 		return a.getCentroid().distanceTo(b)<2*a.findRadius();
 	}
@@ -134,5 +134,138 @@ public class Classifier
 				(westOfAisB(aCenter, bCenter)? "West ": "");
 			
 	}
+	
+	
+	
+	//------------------------------------------------
+	//	Mask Functions
+	//------------------------------------------------
+	
+	public static void northMask(boolean[][] mask, Building landmark)
+	{
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				if(mask[row][col])
+				{
+					if(!northOfAisB(landmark.getCentroid(), new JPoint2D(col,row)))
+					{
+						mask[row][col] = false;
+					}
+				}
+			}
+		}
+	}
+	public static void southMask(boolean[][] mask, Building landmark)
+	{
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				if(mask[row][col])
+				{
+					if(!southOfAisB(landmark.getCentroid(), new JPoint2D(col,row)))
+					{
+						mask[row][col] = false;
+					}
+				}
+			}
+		}
+	}
+	public static void eastMask(boolean[][] mask, Building landmark)
+	{
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				if(mask[row][col])
+				{
+					if(!eastOfAisB(landmark.getCentroid(), new JPoint2D(col,row)))
+					{
+						mask[row][col] = false;
+					}
+				}
+			}
+		}
+	}
+	public static void westMask(boolean[][] mask, Building landmark)
+	{
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				if(mask[row][col])
+				{
+					if(!westOfAisB(landmark.getCentroid(), new JPoint2D(col,row)))
+					{
+						mask[row][col] = false;
+					}
+				}
+			}
+		}
+	}
 
+	public static boolean[][] createMask(int height, int width)
+	{
+		boolean mask[][]= new boolean[height][width];
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				mask[row][col] = true;
+			}
+		}
+		return mask;
+	}
+	
+	public static void mask(boolean[][] mask,Collection<Relation> relations)
+	{
+
+		for(Relation r: relations)
+		{
+			mask(mask,r.getType(),r.getLandmark());
+		}
+		
+	}
+	private static void mask(boolean[][] mask, Preposition type, Building landmark) 
+	{
+		switch(type)
+		{
+		case NORTH:
+			northMask(mask, landmark);
+			break;
+		case SOUTH:
+			southMask(mask, landmark);
+			break;
+		case EAST:
+			eastMask(mask, landmark);
+			break;
+		case WEST:
+			westMask(mask, landmark);
+			break;
+		}
+	}
+
+	public static JImage maskToImage(boolean[][] mask, int[] pixel)
+	{
+		JImage im = new JImage(mask[0].length, mask.length, 3);
+		maskToImage(mask, pixel, im);
+		return im;
+	}
+	
+	public static JImage maskToImage(boolean[][] mask, int[] pixel, JImage background)
+	{
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				if(mask[row][col])
+				{
+					background.setPixel(col, row, pixel);
+				}
+			}
+		}
+		return background;
+	}
 }
