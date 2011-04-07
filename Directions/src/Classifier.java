@@ -205,6 +205,22 @@ public class Classifier
 			}
 		}
 	}
+	public static void nearMask(boolean[][] mask, Building landmark)
+	{
+		for(int row=0;row<mask.length;row++)
+		{
+			for(int col=0;col<mask[0].length;col++)
+			{
+				if(mask[row][col])
+				{
+					if(!nearToAisB(landmark, new JPoint2D(col,row)))
+					{
+						mask[row][col] = false;
+					}
+				}
+			}
+		}
+	}
 
 	public static boolean[][] createMask(int height, int width)
 	{
@@ -221,12 +237,10 @@ public class Classifier
 	
 	public static void mask(boolean[][] mask,Collection<Relation> relations)
 	{
-
 		for(Relation r: relations)
 		{
 			mask(mask,r.getType(),r.getLandmark());
 		}
-		
 	}
 	private static void mask(boolean[][] mask, Preposition type, Building landmark) 
 	{
@@ -243,6 +257,9 @@ public class Classifier
 			break;
 		case WEST:
 			westMask(mask, landmark);
+			break;
+		case NEAR:
+			nearMask(mask, landmark);
 			break;
 		}
 	}

@@ -136,15 +136,16 @@ public class Gui {
 	public void setEndPoint(int x, int y) {
 		this.endPoint = new JPoint2D(x,y);
 		endPointValue.setText(endPoint.toString());
-		System.out.println(startPoint.angleTo(endPoint));
-		System.out.println(Classifier.direction(startPoint, endPoint));
+		
+		//System.out.println(startPoint.angleTo(endPoint));
+		//System.out.println(Classifier.direction(startPoint, endPoint));
 		showColoredImage();
 	}
 	
 	public void showColoredImage()
 	{
-		if(this.startPoint==null || this.endPoint==null)
-			return;
+		//if(this.startPoint==null || this.endPoint==null)
+			//return;
 		
 		this.display.updateImage(campus.getColoredDisplay(this.startPoint, this.endPoint).getBufferedImage());
 	}
