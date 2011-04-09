@@ -115,4 +115,10 @@ public class JPoint2D
 		return a.distance(b);
 		
 	}
+	
+	public Point2D asPoint()
+	{
+		return new Point2D.Double(this.mX, this.mY);
+		
+	}
 }

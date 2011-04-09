@@ -50,7 +50,7 @@ public class BuildingDescription {
 		return true;
 	}
 
-	public BuildingDescription(Building b, List<Relation> connections) {
+	public BuildingDescription(Building b, Collection<Relation> connections) {
 		this.building = b;
 		relevantRelations = new ArrayList<Relation>();
 		

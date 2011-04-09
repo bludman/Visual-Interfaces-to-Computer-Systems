@@ -102,6 +102,8 @@ public class Gui {
 			mode = MODES.PICKING_START_POINT;
 			pickingButton.setText("Picking Start Point");
 		}
+		showColoredImage();
+		
 	}
 	
 	/**
@@ -130,7 +132,6 @@ public class Gui {
 	public void setStartPoint(int x, int y) {
 		this.startPoint = new JPoint2D(x,y);
 		startPointValue.setText(startPoint.toString());
-		showColoredImage();
 	}
 
 	public void setEndPoint(int x, int y) {
@@ -139,7 +140,7 @@ public class Gui {
 		
 		//System.out.println(startPoint.angleTo(endPoint));
 		//System.out.println(Classifier.direction(startPoint, endPoint));
-		showColoredImage();
+		
 	}
 	
 	public void showColoredImage()
@@ -148,6 +149,7 @@ public class Gui {
 			//return;
 		
 		this.display.updateImage(campus.getColoredDisplay(this.startPoint, this.endPoint).getBufferedImage());
+		display.setLines(campus.getCurrentPath().getLines());
 	}
 
 	public void setTitle(String title)

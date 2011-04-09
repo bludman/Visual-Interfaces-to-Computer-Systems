@@ -43,6 +43,7 @@ public class JMouseListener extends MouseInputAdapter {
 			}
 			this.gui.togglePicking();
 			
+			
 		}
 		
 		if(e.getButton() == MouseEvent.BUTTON3 )

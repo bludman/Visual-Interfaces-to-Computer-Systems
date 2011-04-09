@@ -39,6 +39,7 @@ public class Campus
 	
 	/** Binary image suitable for displaying the campus */
 	private JImage displayImage;
+	private Path currentPath;
 	
 	public Campus(String campusName)
 	{
@@ -246,11 +247,15 @@ public class Campus
 		
 		JImage sIm = null;
 		JImage gIm = null;
+		Building startBuilding = null;
+		Building goalBuilding = null;
 		
 		if(start!=null)
 		{
 			boolean[][] sMask=Classifier.createMask(this.displayImage.getHeight(), this.displayImage.getWidth());
 			BuildingDescription sDescription = buildDynamicDescription(start);
+			Relation.closestRelations(sDescription.getRelations());
+			startBuilding = Relation.closestLandmark(sDescription.getRelations());
 			Classifier.mask(sMask, sDescription.getRelations());
 			sIm = Classifier.maskToImage(sMask, green,displayImage.copy());
 		}
@@ -259,6 +264,8 @@ public class Campus
 		{
 			boolean[][] gMask=Classifier.createMask(this.displayImage.getHeight(), this.displayImage.getWidth());
 			BuildingDescription gDescription = buildDynamicDescription(goal);
+			Relation.closestRelations(gDescription.getRelations());
+			goalBuilding = Relation.closestLandmark(gDescription.getRelations());
 			Classifier.mask(gMask, gDescription.getRelations());
 			if(start!=null)
 				gIm = Classifier.maskToImage(gMask, red,sIm);
@@ -266,11 +273,22 @@ public class Campus
 				gIm = Classifier.maskToImage(gMask, red,displayImage.copy());
 		}
 		
+		System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
+		
+		if(startBuilding != null && goalBuilding !=null){
+			currentPath = Path.findPath(startBuilding, goalBuilding, this.relations);
+			System.out.println(currentPath.toString());
+		}
+		
 		return gIm!=null? gIm: sIm;
 	}
 
 	public JImage getDisplayImage() {
 		return new JImage(this.displayImage);
+	}
+	
+	public Path getCurrentPath(){
+		return this.currentPath;
 	}
 	
 	public BuildingDescription  buildDynamicDescription(JPoint2D point)

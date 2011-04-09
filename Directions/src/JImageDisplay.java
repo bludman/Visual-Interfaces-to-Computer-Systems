@@ -1,6 +1,8 @@
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -33,6 +35,7 @@ public class JImageDisplay extends JPanel {
 	private Building trackedBlob;
 	
 	private Set<JPoint2D> greenField;
+	private Collection<Line2D> lines;
 	
 	//tracked points
 	public JPoint2D redPoint;
@@ -124,6 +127,13 @@ public class JImageDisplay extends JPanel {
 		{
 			
 		}
+		
+		if(lines!=null)
+			for(Line2D l : lines)
+			{
+				g.drawLine((int)l.getX1(),(int) l.getY1(), (int)l.getX2(), (int)l.getY2());
+			}
+		
 	}
 
 	public Dimension getPreferredSize() { return size; }
@@ -200,7 +210,10 @@ public class JImageDisplay extends JPanel {
 		return image;
 	}
 
-	
+	public void setLines(Collection<Line2D> lines)
+	{
+		this.lines = lines;
+	}
 
 }
 

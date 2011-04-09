@@ -1,6 +1,10 @@
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 
 
 
@@ -302,6 +306,70 @@ public class Relation {
 	public String getTypeWithPrep() {
 		String to_of = preposition==Classifier.Preposition.NEAR ? " to " : " of ";
 		return preposition+to_of;
+	}
+	
+	
+	public static Building closestLandmark(Collection<Relation> relations)
+	{
+		if(relations == null)
+			return null;
+		
+		Building minB = null;
+		double minDistance=Double.MAX_VALUE;
+		
+		//Find the closest landmark
+		for(Relation r : relations)
+		{
+			if(r.getDistance()<minDistance)
+			{
+				minDistance = r.getDistance();
+				minB= r.getLandmark();
+			}
+		}
+		
+		return minB;
+		
+	}
+	
+	public static Collection<Relation> closestRelations(Collection<Relation> relations)
+	{
+		if(relations == null)
+			return null;
+		
+		Building minB = null;
+		double minDistance=Double.MAX_VALUE;
+		
+		//Find the closest landmark
+		for(Relation r : relations)
+		{
+			if(r.getDistance()<minDistance)
+			{
+				minDistance = r.getDistance();
+				minB= r.getLandmark();
+			}
+		}
+		
+		//Collect all relations to this landmark
+		Collection<Relation> relevantRelations = new ArrayList<Relation>();
+		
+		System.out.println("Closest building:");
+		for(Relation r : relations)
+		{
+			if(r.getLandmark()==minB)
+			{
+				relevantRelations.add(r);
+				System.out.println(r);
+			}
+		}
+		
+		return relevantRelations;
+	}
+
+
+
+
+	private double getDistance() {
+		return distance;
 	}
 	
 }
