@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 
 
@@ -36,6 +38,9 @@ public class Campus
 	
 	/** List of the connectivity graph of buildings */
 	private List<Relation> relations;
+	
+	/** Direction from a building to another building */
+	private DirectionMap directionMap;
 	
 	/** Binary image suitable for displaying the campus */
 	private JImage displayImage;
@@ -193,11 +198,13 @@ public class Campus
 			System.out.println(r);
 		System.out.println("************\n\n\n\n");
 		
+		this.directionMap = new DirectionMap(this.relations);
+		
 	}
 
 	/**
 	 * Build the connectivity graph of all the given buildings by creating the fully connected 
-	 * graph of all the buildings for each preposition and then trimming off redundent 
+	 * graph of all the buildings for each preposition and then trimming off redundant 
 	 * relations (transitive reduction) for each preposition (except near which is not considered transitive)
 	 * @param listOfBuildings
 	 * @return
@@ -249,6 +256,8 @@ public class Campus
 		JImage gIm = null;
 		Building startBuilding = null;
 		Building goalBuilding = null;
+		Direction toStartBuilding = null;
+		Direction terminalGuidance = null;
 		
 		if(start!=null)
 		{
@@ -256,6 +265,7 @@ public class Campus
 			BuildingDescription sDescription = buildDynamicDescription(start);
 			Relation.closestRelations(sDescription.getRelations());
 			startBuilding = Relation.closestLandmark(sDescription.getRelations());
+			toStartBuilding = Relation.directionToClosestLandmark(sDescription.getRelations());
 			Classifier.mask(sMask, sDescription.getRelations());
 			sIm = Classifier.maskToImage(sMask, green,displayImage.copy());
 		}
@@ -266,6 +276,7 @@ public class Campus
 			BuildingDescription gDescription = buildDynamicDescription(goal);
 			Relation.closestRelations(gDescription.getRelations());
 			goalBuilding = Relation.closestLandmark(gDescription.getRelations());
+			terminalGuidance = Relation.directionFromClosestLandmark(gDescription.getRelations());
 			Classifier.mask(gMask, gDescription.getRelations());
 			if(start!=null)
 				gIm = Classifier.maskToImage(gMask, red,sIm);
@@ -276,8 +287,15 @@ public class Campus
 		System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
 		
 		if(startBuilding != null && goalBuilding !=null){
-			currentPath = Path.findPath(startBuilding, goalBuilding, this.relations);
-			System.out.println(currentPath.toString());
+			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
+			System.out.println("PATH:\n"+currentPath.toString());
+			System.out.println("Directions:");
+			System.out.println("Directions to start building:");
+			System.out.println(toStartBuilding);
+			System.out.println("Building Directions:\n");
+			System.out.println(currentPath.getDirectionsAsString(this.directionMap));
+			System.out.println("Directions to last building:");
+			System.out.println(terminalGuidance);
 		}
 		
 		return gIm!=null? gIm: sIm;
@@ -291,9 +309,15 @@ public class Campus
 		return this.currentPath;
 	}
 	
+	
+	/**
+	 * Build the dynamic description of a point on the map
+	 * @param point
+	 * @return
+	 */
 	public BuildingDescription  buildDynamicDescription(JPoint2D point)
 	{
-		Building b = new Building("Dynamic",-1);
+		Building b = new Building("Dynamicly Generated Point",-1);
 		b.addPoint(point);
 		
 		List<Building> buildings = new ArrayList<Building>(buildingList);
@@ -301,6 +325,23 @@ public class Campus
 		
 		List<Relation> connectivity = generateRelations(buildings);
 		return descriptionOfBuilding(b, connectivity);
+	}
+	
+	
+	public void retraceSteps(Path path)
+	{
+		
+	}
+	
+	/**
+	 * Starting at a building, 
+	 * which buildings can you reach from that building if you go in some direction
+	 * @param d
+	 */
+	public void followDirection(Direction d)
+	{
+		
+		
 	}
 	
 

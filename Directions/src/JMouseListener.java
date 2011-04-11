@@ -31,8 +31,8 @@ public class JMouseListener extends MouseInputAdapter {
 		if(e.getButton() == MouseEvent.BUTTON1 )
 		{
 			//System.out.println("Updating");
-			currentRect = new Rectangle(x, y, 0, 0);
-			updateSize(e);
+			//currentRect = new Rectangle(x, y, 0, 0);
+			//updateSize(e);
 			
 			if(gui.getMode()==Gui.MODES.PICKING_START_POINT){
 				gui.setStartPoint(x,y);
@@ -75,8 +75,8 @@ public class JMouseListener extends MouseInputAdapter {
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		updateSize(e);
-		display.setSelectionUpdated();
+		//updateSize(e);
+		//display.setSelectionUpdated();
 	}
 
 	private void updateSize(MouseEvent e) {

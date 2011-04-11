@@ -3,6 +3,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
  * Relations should be thought of as:
  * 		discriptee is preposition of/to landmark
  * 			OR
- * 		preposition of/to lanmark is discpritee
+ * 		preposition of/to landmark is discpritee
  * @author Ben
  *
  */
@@ -309,6 +310,13 @@ public class Relation {
 	}
 	
 	
+	/**
+	 * Given a Collection of Relations that describe a single "descriptee" in relation 
+	 * to several "landmarks", find the landmark that is the closest
+	 * NOTE: Doesn't check that all relations indeed refer to the same descriptee
+	 * @param relations
+	 * @return
+	 */
 	public static Building closestLandmark(Collection<Relation> relations)
 	{
 		if(relations == null)
@@ -329,6 +337,48 @@ public class Relation {
 		
 		return minB;
 		
+	}
+	
+	
+	
+	public static Direction directionToClosestLandmark(Collection<Relation> relations)
+	{
+		return Direction.reverse(directionFromClosestLandmark(relations));
+	}
+	
+	public static Direction directionFromClosestLandmark(Collection<Relation> relations)
+	{
+		if(relations == null)
+			return null;
+		
+		Building minLandmark = null;
+		double minDistance=Double.MAX_VALUE;
+		
+		//Find the closest landmark
+		for(Relation r : relations)
+		{
+			if(r.getDistance()<minDistance)
+			{
+				minDistance = r.getDistance();
+				minLandmark= r.getLandmark();
+			}
+		}
+		
+		Building descriptee = null;
+		Set<Classifier.Preposition> prepositions = new HashSet<Classifier.Preposition>();
+		
+		//extract prepositions
+		for(Relation r : relations)
+		{
+			if(r.getLandmark()==minLandmark)
+			{
+				prepositions.add(r.getType());
+				descriptee = r.getDescriptee();
+				System.out.println("\tUsing relation:"+r);
+			}
+		}
+		
+		return new Direction(minLandmark, descriptee, prepositions);
 	}
 	
 	public static Collection<Relation> closestRelations(Collection<Relation> relations)

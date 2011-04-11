@@ -150,6 +150,7 @@ public class Gui {
 		
 		this.display.updateImage(campus.getColoredDisplay(this.startPoint, this.endPoint).getBufferedImage());
 		display.setLines(campus.getCurrentPath().getLines());
+		frame.repaint();
 	}
 
 	public void setTitle(String title)
