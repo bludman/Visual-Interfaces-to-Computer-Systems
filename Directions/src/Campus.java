@@ -1,3 +1,4 @@
+import java.awt.geom.Line2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +46,9 @@ public class Campus
 	/** Binary image suitable for displaying the campus */
 	private JImage displayImage;
 	private Path currentPath;
+	private JPoint2D start;
+	private JPoint2D goal;
+	
 	
 	public Campus(String campusName)
 	{
@@ -252,6 +256,9 @@ public class Campus
 		final int[] green = {0,255,0};
 		final int[] red = {255,0,0};
 		
+		this.start = start;
+		this.goal = goal;
+		
 		JImage sIm = null;
 		JImage gIm = null;
 		Building startBuilding = null;
@@ -289,9 +296,11 @@ public class Campus
 		if(startBuilding != null && goalBuilding !=null){
 			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
 			System.out.println("PATH:\n"+currentPath.toString());
-			System.out.println("Directions:");
+			System.out.println("Directions to first building:");
 			System.out.println(toStartBuilding);
+			System.out.println("Building Directions:");
 			System.out.println(currentPath.getDirectionsAsString(this.directionMap));
+			System.out.println("Terminal guidance:");
 			System.out.println(terminalGuidance);
 			
 			currentPath.simulate(directionMap);
@@ -306,6 +315,14 @@ public class Campus
 	
 	public Path getCurrentPath(){
 		return this.currentPath;
+	}
+	
+	public Collection<Line2D> getCurrentLines() {
+		ArrayList<Line2D> lines = new ArrayList<Line2D>();
+		lines.add(new Line2D.Double(this.start.asPoint(),this.currentPath.getStart().getCentroid().asPoint()));
+		lines.addAll(this.currentPath.getLines());
+		lines.add(new Line2D.Double(this.currentPath.getGoal().getCentroid().asPoint(),this.goal.asPoint()));
+		return lines;
 	}
 	
 	
@@ -329,7 +346,7 @@ public class Campus
 	
 	public void retraceSteps(Path path)
 	{
-		
+		//TODO: use this?
 	}
 	
 	/**
@@ -339,9 +356,11 @@ public class Campus
 	 */
 	public void followDirection(Direction d)
 	{
-		
+		//TODO: use this?
 		
 	}
+
+	
 	
 
 }

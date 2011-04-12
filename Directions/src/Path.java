@@ -20,11 +20,22 @@ import java.util.Set;
  */
 public class Path {
 
+	
 	private List<Building> path;
 	private List<Direction> directionList=null;
 
 	public Path(List<Building> path) {
 		this.path = path;
+	}
+	
+	public Building getStart()
+	{
+		return path.get(0);
+	}
+	
+	public Building getGoal()
+	{
+		return path.get(path.size()-1);
 	}
 
 	/**
@@ -216,10 +227,10 @@ public class Path {
 		if(directionList==null)
 			calculateDirections(directionMap);
 		
-		
+		System.out.println("Direction list length:"+directionList.size());
 		StringBuilder directionString = new StringBuilder();
 
-		for (int i = 0; i < directionList.size() - 1; i++) {
+		for (int i = 0; i < directionList.size(); i++) {
 			if (i > 0)
 				directionString.append("\n");
 			directionString.append(directionList.get(i).toString());
@@ -245,19 +256,73 @@ public class Path {
 		
 		
 		System.out.println("Directions:");
-		for(Direction d: directionList)
+//		for(Direction d: directionList)
+//		{
+//			System.out.println(d.toShortString()+"->");
+//			Set<Building> potentialNextStops = directionMap.goDirection(d.getFrom(), d.getPreps());
+//			if(potentialNextStops!=null)
+//				for(Building b: potentialNextStops)
+//				{
+//					System.out.println("\t"+b.getName());
+//				}
+//			else
+//				System.out.println("\tDead end");
+//		}
+		
+		LinkedList<Direction> seedDirections = new LinkedList<Direction>(directionList);
+		LinkedList<Building> finalBuildings = followDirectionBranches(this.path.get(0),seedDirections,directionMap);
+		
+		int arrivedAtGoal=0;
+		int arrivedAtWrongBuilding=0;
+		for(Building b: finalBuildings)
 		{
-			System.out.println(d.toShortString()+"->");
-			Set<Building> potentialNextStops = directionMap.goDirection(d.getFrom(), d.getPreps());
-			if(potentialNextStops!=null)
-				for(Building b: potentialNextStops)
-				{
-					System.out.println("\t"+b.getName());
-				}
+			System.out.println("Final building: "+b.getName());
+			if(b==this.getGoal())
+				arrivedAtGoal++;
 			else
-				System.out.println("\tDead end");
+				arrivedAtWrongBuilding++;
 		}
+		
+		System.out.println("Arrived at goal: "+arrivedAtGoal);
+		System.out.println("Arrived at wrong building: "+arrivedAtWrongBuilding);
+		System.out.println("Percent success "+(double)arrivedAtGoal/finalBuildings.size());//(arrivedAtGoal+arrivedAtWrongBuilding));
+		
+		
 		System.out.println("Done\n*****\n");
+	}
+
+	private LinkedList<Building> followDirectionBranches(Building start, LinkedList<Direction> seedDirections, DirectionMap directionMap) 
+	{
+		LinkedList<Building> l =new LinkedList<Building>();
+		
+		//didn't reach a final destination
+		if(start==null)
+		{
+			System.out.println("Empty start node");
+			return l;//empty list
+		}
+		
+		if(seedDirections.size() == 0) //at a final building
+		{
+			System.out.println("At end i think");
+			l.add(start);
+			return l;
+		}
+			
+		
+		Direction d = seedDirections.pop();
+		Set<Building> potentialNextStops = directionMap.goDirection(start, d.getPreps());
+		System.out.println("\tGoing: "+d.toShortString());
+		if(potentialNextStops == null)
+			return l;
+		for(Building b : potentialNextStops)
+		{
+			System.out.println("\t\tNext stop: "+b.getName());
+			LinkedList<Direction> newDirections = new LinkedList<Direction>(seedDirections);
+			l.addAll(followDirectionBranches(b, newDirections, directionMap));
+		}
+		
+		return l;
 	}
 
 }

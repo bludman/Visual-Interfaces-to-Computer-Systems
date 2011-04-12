@@ -149,7 +149,7 @@ public class Gui {
 			//return;
 		
 		this.display.updateImage(campus.getColoredDisplay(this.startPoint, this.endPoint).getBufferedImage());
-		display.setLines(campus.getCurrentPath().getLines());
+		display.setLines(campus.getCurrentLines());//campus.getCurrentPath().getLines());
 		frame.repaint();
 	}
 
