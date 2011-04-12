@@ -356,13 +356,13 @@ public class Path {
 				} else
 				{
 					if(!openedDistance.containsKey(n))
-						openedDistance.put(n, n.distanceTo(best));
+						openedDistance.put(n,openedDistance.get(best)+n.distanceTo(best));//openedDistance.put(n, n.distanceTo(best));
 					
 					
 					if(n.distanceTo(best)<openedDistance.get(n))
 					{
-						//openedBy.put(n,best);
-						//openedDistance.put(n, n.distanceTo(best));
+						openedBy.put(n,best);
+						openedDistance.put(n,openedDistance.get(best)+n.distanceTo(best));//openedDistance.put(n, n.distanceTo(best));
 						
 						System.out.println("\tUPDATING: " + n.getName());
 					}
