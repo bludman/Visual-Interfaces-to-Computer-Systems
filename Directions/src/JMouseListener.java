@@ -30,8 +30,10 @@ public class JMouseListener extends MouseInputAdapter {
 			
 			if(gui.getMode()==Gui.MODES.PICKING_START_POINT){
 				gui.setStartPoint(x,y);
+				gui.setStartDescription(campus.buildDynamicDescription(new JPoint2D(x,y),"Dynamically Generated Start Point",-1));
 			}else if(gui.getMode()==Gui.MODES.PICKING_END_POINT){
 				gui.setEndPoint(x,y);
+				gui.setGoalDescription(campus.buildDynamicDescription(new JPoint2D(x,y),"Dynamically Generated Goal Point",-2));
 			}
 			this.gui.togglePicking();
 			display.setBluePoint(null);

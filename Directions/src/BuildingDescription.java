@@ -76,7 +76,7 @@ public class BuildingDescription {
 			if(i+1<relevantRelations.size() && relevantRelations.get(i).getLandmark() == relevantRelations.get(i+1).getLandmark())
 				builder.append("and ");
 			else
-				builder.append(relevantRelations.get(i).getLandmark().getName()).append("\n\t");
+				builder.append(relevantRelations.get(i).getLandmark().getName()).append("\n");
 			
 		}
 			

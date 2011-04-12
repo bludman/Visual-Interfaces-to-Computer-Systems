@@ -291,9 +291,10 @@ public class Campus
 				gIm = Classifier.maskToImage(gMask, red,displayImage.copy());
 		}
 		
-		System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
+		
 		
 		if(startBuilding != null && goalBuilding !=null){
+			System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
 			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
 			System.out.println("PATH:\n"+currentPath.toString());
 			System.out.println("Directions to first building:");
@@ -318,6 +319,10 @@ public class Campus
 	}
 	
 	public Collection<Line2D> getCurrentLines() {
+		
+		if(this.start==null || this.goal==null)
+			return null;
+		
 		ArrayList<Line2D> lines = new ArrayList<Line2D>();
 		lines.add(new Line2D.Double(this.start.asPoint(),this.currentPath.getStart().getCentroid().asPoint()));
 		lines.addAll(this.currentPath.getLines());
@@ -331,9 +336,9 @@ public class Campus
 	 * @param point
 	 * @return
 	 */
-	public BuildingDescription  buildDynamicDescription(JPoint2D point, String name, int lable)
+	public BuildingDescription  buildDynamicDescription(JPoint2D point, String name, int label)
 	{
-		Building b = new Building("Dynamically Generated Point",-1);
+		Building b = new Building(name,label);
 		b.addPoint(point);
 		
 		List<Building> buildings = new ArrayList<Building>(buildingList);

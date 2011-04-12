@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 
@@ -18,6 +20,8 @@ public class Gui {
 	private Campus campus;
 	private JTextField clickPositionDetails;
 	private JTextField startPointValue, endPointValue;
+	
+	private JTextArea greenDescription, redDescription;
 	private JButton pickingButton;
 	
 	public static enum MODES{PICKING_START_POINT, PICKING_END_POINT};
@@ -61,7 +65,7 @@ public class Gui {
 		
 		JPanel statusBar = new JPanel();
 		JLabel clickPositionLabel = new JLabel("Building Details:");
-		clickPositionDetails = new JTextField(50);
+		clickPositionDetails = new JTextField(47);
 		statusBar.add(clickPositionLabel);
 		statusBar.add(clickPositionDetails);		
 		panel.add(statusBar,BorderLayout.SOUTH);
@@ -72,7 +76,16 @@ public class Gui {
 		campus = new Campus("ass3");
 		display = new JImageDisplay(campus);
 		display.updateImage(campus.getDisplayImage().getBufferedImage());
-		panel.add(display, BorderLayout.CENTER);
+		panel.add(display, BorderLayout.EAST);
+		
+		
+		greenDescription = new JTextArea(75, 20);
+		redDescription = new JTextArea(75, 20);
+		JPanel cloudDescriptionPanel = new JPanel(new GridLayout(2,1));
+		cloudDescriptionPanel.add(greenDescription);
+		cloudDescriptionPanel.add(redDescription);
+		panel.add(cloudDescriptionPanel,BorderLayout.WEST);
+		
 		
 		
 		
@@ -83,7 +96,7 @@ public class Gui {
 		frame.setContentPane(panel);
 		frame.pack();
 		//frame.setBounds(20,20,300,600);
-		frame.setSize(new Dimension(800, 600));
+		frame.setSize(new Dimension(650, 600));
 		
 		frame.setVisible(true);
 		
@@ -166,5 +179,15 @@ public class Gui {
 	 */
 	public void redraw() {
 		this.frame.repaint();
+	}
+
+	public void setStartDescription(BuildingDescription description) {
+		this.greenDescription.setText(description.toString());
+		
+	}
+
+	public void setGoalDescription(BuildingDescription description) {
+		this.redDescription.setText(description.toString());
+		
 	}
 }
