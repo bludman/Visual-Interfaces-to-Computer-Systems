@@ -4,22 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-
-
-
-/**
- * 
- */
 
 /**
  * @author Ben
@@ -188,13 +178,8 @@ public class Campus
 		return getBuilding(label).getName();
 	}
 	
-	
-	/**
-
-	 */
 	public void generateGraph()
 	{
-		
 		this.relations = generateRelations(buildingList);
 
 		System.out.println("\n\n\n*** Reduced total relation list: ("+relations.size()+") ***\n\n");
@@ -203,7 +188,6 @@ public class Campus
 		System.out.println("************\n\n\n\n");
 		
 		this.directionMap = new DirectionMap(this.relations);
-		
 	}
 
 	/**
@@ -213,8 +197,8 @@ public class Campus
 	 * @param listOfBuildings
 	 * @return
 	 */
-	private static List<Relation> generateRelations(List<Building> listOfBuildings) {
-		
+	private static List<Relation> generateRelations(List<Building> listOfBuildings)
+	{
 		List<Relation> graph = new LinkedList<Relation>();
 		
 		List<Relation> fullNorthRelations = Relation.generateNorthRelations(listOfBuildings);
@@ -294,15 +278,21 @@ public class Campus
 		
 		
 		if(startBuilding != null && goalBuilding !=null){
+			System.out.println("*****");
+			System.out.println("Found buildings closest to start and goal points");
 			System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
 			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
 			System.out.println("Shortest Path:\n\t"+currentPath.toString());
-			System.out.println("Directions to first building:");
+			System.out.println("*****\n");
+			System.out.println("Directions from start point to goal point:");
+			
+			//System.out.println("Directions to first building:");
 			System.out.println(toStartBuilding);
-			System.out.println("Building Directions:");
+			//System.out.println("Building Directions:");
 			System.out.println(currentPath.getDirectionsAsString(this.directionMap));
-			System.out.println("Terminal guidance:");
+			//System.out.println("Terminal guidance:");
 			System.out.println(terminalGuidance);
+			System.out.println("*****\n");
 			
 			currentPath.simulate(directionMap);
 		}
@@ -347,25 +337,4 @@ public class Campus
 		List<Relation> connectivity = generateRelations(buildings);
 		return descriptionOfBuilding(b, connectivity);
 	}
-	
-	
-	public void retraceSteps(Path path)
-	{
-		//TODO: use this?
-	}
-	
-	/**
-	 * Starting at a building, 
-	 * which buildings can you reach from that building if you go in some direction
-	 * @param d
-	 */
-	public void followDirection(Direction d)
-	{
-		//TODO: use this?
-		
-	}
-
-	
-	
-
 }

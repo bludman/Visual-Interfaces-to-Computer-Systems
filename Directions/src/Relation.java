@@ -5,14 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-
-
-
-/**
- * 
- */
-
 /**
  * Stores the relation of two buildings.
  * Relations should be thought of as:
@@ -301,9 +293,6 @@ public class Relation {
 		return preposition+to_of+landmark.getName();
 	}
 
-
-
-
 	public String getTypeWithPrep() {
 		String to_of = preposition==Classifier.Preposition.NEAR ? " to " : " of ";
 		return preposition+to_of;
@@ -336,7 +325,6 @@ public class Relation {
 		}
 		
 		return minB;
-		
 	}
 	
 	
@@ -374,7 +362,6 @@ public class Relation {
 			{
 				prepositions.add(r.getType());
 				descriptee = r.getDescriptee();
-				System.out.println("\tUsing relation:"+r);
 			}
 		}
 		
@@ -402,13 +389,11 @@ public class Relation {
 		//Collect all relations to this landmark
 		Collection<Relation> relevantRelations = new ArrayList<Relation>();
 		
-		System.out.println("Closest building:");
 		for(Relation r : relations)
 		{
 			if(r.getLandmark()==minB)
 			{
 				relevantRelations.add(r);
-				System.out.println(r);
 			}
 		}
 		
