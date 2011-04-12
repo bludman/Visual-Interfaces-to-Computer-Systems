@@ -1,4 +1,3 @@
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,13 +9,13 @@ import java.util.Set;
 public class Direction 
 {
 	private Building from,to;
-	private Collection<Classifier.Preposition> prepositions;
+	private Set<Classifier.Preposition> prepositions;
 	
 	private Classifier.Preposition NS=null;
 	private Classifier.Preposition EW=null;
 	private Classifier.Preposition near=null;
 
-	public Direction(Building from, Building to, Collection<Classifier.Preposition> prepositions) 
+	public Direction(Building from, Building to, Set<Classifier.Preposition> prepositions) 
 	{
 		this.from = from;
 		this.to = to;
@@ -82,6 +81,28 @@ public class Direction
 		
 		
 		return "Leave "+from.getName()+" heading "+directionText+" and arrive at "+to.getName()+nearText;
+	}
+
+	public String toShortString() {
+		String nsText = ((NS == null) ? "" : NS.toString());
+		String ewText = ((EW == null) ? "" : EW.toString());
+	
+		int numberOfDirections = prepositions.size() - (near == null ? 0 : 1);
+		//String connector = numberOfDirections == 2 ? " and " : "";
+		String connector = numberOfDirections == 2 ? " " : "";
+		String nearText = ((near == null) ? "" : " NEAR");
+		String directionText = nsText+connector+ewText;
+		
+		
+		return directionText+nearText;
+	}
+
+	public Building getFrom() {
+		return this.from;
+	}
+
+	public Set<Classifier.Preposition> getPreps() {
+		return this.prepositions;
 	}
 
 

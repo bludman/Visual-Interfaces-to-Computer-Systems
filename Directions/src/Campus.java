@@ -290,12 +290,11 @@ public class Campus
 			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
 			System.out.println("PATH:\n"+currentPath.toString());
 			System.out.println("Directions:");
-			System.out.println("Directions to start building:");
 			System.out.println(toStartBuilding);
-			System.out.println("Building Directions:\n");
 			System.out.println(currentPath.getDirectionsAsString(this.directionMap));
-			System.out.println("Directions to last building:");
 			System.out.println(terminalGuidance);
+			
+			currentPath.simulate(directionMap);
 		}
 		
 		return gIm!=null? gIm: sIm;
@@ -317,7 +316,7 @@ public class Campus
 	 */
 	public BuildingDescription  buildDynamicDescription(JPoint2D point)
 	{
-		Building b = new Building("Dynamicly Generated Point",-1);
+		Building b = new Building("Dynamically Generated Point",-1);
 		b.addPoint(point);
 		
 		List<Building> buildings = new ArrayList<Building>(buildingList);
