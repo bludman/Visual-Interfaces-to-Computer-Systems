@@ -256,26 +256,20 @@ public class Path {
 		
 		
 		System.out.println("Directions:");
-//		for(Direction d: directionList)
-//		{
-//			System.out.println(d.toShortString()+"->");
-//			Set<Building> potentialNextStops = directionMap.goDirection(d.getFrom(), d.getPreps());
-//			if(potentialNextStops!=null)
-//				for(Building b: potentialNextStops)
-//				{
-//					System.out.println("\t"+b.getName());
-//				}
-//			else
-//				System.out.println("\tDead end");
-//		}
 		
 		LinkedList<Direction> seedDirections = new LinkedList<Direction>(directionList);
 		LinkedList<Building> finalBuildings = followDirectionBranches(this.path.get(0),seedDirections,directionMap);
 		
 		int arrivedAtGoal=0;
 		int arrivedAtWrongBuilding=0;
+		Map<Building, Integer> buildingArrivalFrequency = new HashMap<Building, Integer>();
 		for(Building b: finalBuildings)
 		{
+			if(!buildingArrivalFrequency.containsKey(b))
+				buildingArrivalFrequency.put(b, 0);
+			
+			buildingArrivalFrequency.put(b, buildingArrivalFrequency.get(b).intValue()+1);
+			
 			System.out.println("Final building: "+b.getName());
 			if(b==this.getGoal())
 				arrivedAtGoal++;
@@ -285,7 +279,12 @@ public class Path {
 		
 		System.out.println("Arrived at goal: "+arrivedAtGoal);
 		System.out.println("Arrived at wrong building: "+arrivedAtWrongBuilding);
-		System.out.println("Percent success "+(double)arrivedAtGoal/finalBuildings.size());//(arrivedAtGoal+arrivedAtWrongBuilding));
+		System.out.println("Probability of success: "+(double)arrivedAtGoal/finalBuildings.size());//(arrivedAtGoal+arrivedAtWrongBuilding));
+		for(Building b: buildingArrivalFrequency.keySet())
+		{
+			System.out.println(b.getName()+"- Occurences: "+buildingArrivalFrequency.get(b)+"/"+finalBuildings.size()+" Probability:"+(double)buildingArrivalFrequency.get(b)/finalBuildings.size());
+		}
+		
 		
 		
 		System.out.println("Done\n*****\n");
