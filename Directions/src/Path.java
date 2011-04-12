@@ -48,9 +48,129 @@ public class Path {
 	 */
 	public static Path findShortestPath(Building from, Building to,
 			Collection<Relation> adjacencies) {
-		return breadthFirstSearch(from, to, adjacencies);
-		// return bestFirstSearch(from, to, adjacencies);
+		//return breadthFirstSearch(from, to, adjacencies);
+		 //return bestFirstSearch_Dijkstra(from, to, adjacencies);
+		return bestFirstSearch_Distance(from, to, adjacencies);
 	}
+	
+	 
+	/**
+	 * 
+	 * @param from
+	 * @param to
+	 * @param adjacencies
+	 * @return
+	 */
+	private static Path bestFirstSearch_Dijkstra(Building from, Building to,
+			Collection<Relation> adjacencies) {
+		Set<Building> open = new HashSet<Building>();
+		Set<Building> closed = new HashSet<Building>();
+		List<Building> path = new ArrayList<Building>();
+		Map<Building, Collection<Building>> neighbors = buildNeighborMap(adjacencies);
+		Map<Building, Building> openedBy = new HashMap<Building, Building>();
+		Map<Building, Double> distanceFromStart = new HashMap<Building,Double>();
+
+		
+		for(Relation r: adjacencies)
+		{
+			open.add(r.getLandmark());
+			open.add(r.getDescriptee());
+		}
+		
+		
+		
+		Building mostRecent = from;
+		open.add(from);
+		openedBy.put(from, null);
+		//openedDistance.put(from,0.0);
+		//closed.add(from); 
+		while (!open.isEmpty() ) 
+		{
+			//Building b = open.poll();
+			double minDistance = Double.MAX_VALUE;
+			Building best = null;
+			
+			for(Building b: open)
+			{
+				if(b.distanceTo(mostRecent)<minDistance)
+				{
+					minDistance = b.distanceTo(mostRecent);
+					best = b;
+				}
+			}
+			
+			open.remove(best);
+			closed.add(best);
+			mostRecent = best;
+			
+			
+			System.out.println("Adding best" + best.getName());
+			if (best == to)
+				break;
+
+			Collection<Building> neighborList = neighbors.get(best);
+			System.out.println("Adding neighbors of " + best.getName());
+			for (Building n : neighborList) 
+			{
+				if (!closed.contains(n))
+				{
+					
+					
+					open.add(n);
+					
+					if(!distanceFromStart.containsKey(n))
+						distanceFromStart.put(n, n.distanceTo(best));
+					
+					
+					if(n.distanceTo(best)<distanceFromStart.get(n))
+					{
+						openedBy.put(n,best);
+						distanceFromStart.put(n, n.distanceTo(best));
+						
+						System.out.println("\tUPDATING OPEN: " + n.getName());
+					}
+					
+					
+					
+					
+					//openedBy.put(n, best);//mark "n" as opened by "best"
+					//openedDistance.put(n,n.distanceTo(best));
+					
+					//closed.add(n); 
+					System.out.println("\t" + n.getName());
+				} else
+				{
+					if(!distanceFromStart.containsKey(n))
+						distanceFromStart.put(n, n.distanceTo(best));
+					
+					
+					if(n.distanceTo(best)<distanceFromStart.get(n))
+					{
+						//openedBy.put(n,best);
+						//openedDistance.put(n, n.distanceTo(best));
+						
+						System.out.println("\tUPDATING: " + n.getName());
+					}
+					else
+					{
+						System.out.println("\tIGNORING: " + n.getName());
+					}
+				}
+			}
+		}
+
+		System.out.println("Building path");
+		Building cursor = to;
+		while (cursor != null) {
+			System.out.println("Cursor is: " + cursor.getName());
+			path.add(cursor);
+			cursor = openedBy.get(cursor);
+		}
+		Collections.reverse(path);
+
+		return new Path(path);
+	}
+	
 
 	/**
 	 * @param from
@@ -58,35 +178,200 @@ public class Path {
 	 * @param adjacencies
 	 * @return
 	 */
-	private static Path bestFirstSearch(Building from, Building to,
+	private static Path bestFirstSearch_Distance(Building from, Building to,
 			Collection<Relation> adjacencies) {
-		Queue<Building> open = new LinkedList<Building>();
-		Map<Building, Boolean> visited = new HashMap<Building, Boolean>();
+		Set<Building> open = new HashSet<Building>();
+		Set<Building> closed = new HashSet<Building>();
 		List<Building> path = new ArrayList<Building>();
 		Map<Building, Collection<Building>> neighbors = buildNeighborMap(adjacencies);
 		Map<Building, Building> openedBy = new HashMap<Building, Building>();
+		Map<Building, Double> openedDistance = new HashMap<Building,Double>();
 
-		open.offer(from);
+		Building mostRecent = from;
+		open.add(from);
 		openedBy.put(from, null);
-		visited.put(from, true);
-		while (!open.isEmpty()) {
-			Building b = open.poll();
-			System.out.println("Adding " + b.getName());
-			if (b == to)
+		//openedDistance.put(from,0.0);
+		//closed.add(from); 
+		while (!open.isEmpty() ) 
+		{
+			//Building b = open.poll();
+			double minDistance = Double.MAX_VALUE;
+			Building best = null;
+			
+			for(Building b: open)
+			{
+				if(b.distanceTo(mostRecent)<minDistance)
+				{
+					minDistance = b.distanceTo(mostRecent);
+					best = b;
+				}
+			}
+			
+			open.remove(best);
+			closed.add(best);
+			mostRecent = best;
+			
+			
+			System.out.println("Adding best" + best.getName());
+			if (best == to)
 				break;
 
-			Collection<Building> neighborList = neighbors.get(b);
-			System.out.println("Adding neighbors of " + b.getName());
-			for (Building n : neighborList) {
-				if (!visited.containsKey(n)) {
+			Collection<Building> neighborList = neighbors.get(best);
+			System.out.println("Adding neighbors of " + best.getName());
+			for (Building n : neighborList) 
+			{
+				if (!closed.contains(n))
+				{
+					
+					
 					open.add(n);
-					openedBy.put(n, b);
-					visited.put(n, true);
+					
+					if(!openedDistance.containsKey(n))
+						openedDistance.put(n, n.distanceTo(best));
+					
+					
+					if(n.distanceTo(best)<openedDistance.get(n))
+					{
+						openedBy.put(n,best);
+						openedDistance.put(n, n.distanceTo(best));
+						
+						System.out.println("\tUPDATING OPEN: " + n.getName());
+					}
+					
+					
+					
+					
+					//openedBy.put(n, best);//mark "n" as opened by "best"
+					//openedDistance.put(n,n.distanceTo(best));
+					
+					//closed.add(n); 
 					System.out.println("\t" + n.getName());
 				} else
-					System.out.println("\tIGNORING: " + n.getName());
+				{
+					if(!openedDistance.containsKey(n))
+						openedDistance.put(n, n.distanceTo(best));
+					
+					
+					if(n.distanceTo(best)<openedDistance.get(n))
+					{
+						//openedBy.put(n,best);
+						//openedDistance.put(n, n.distanceTo(best));
+						
+						System.out.println("\tUPDATING: " + n.getName());
+					}
+					else
+					{
+						System.out.println("\tIGNORING: " + n.getName());
+					}
+				}
 			}
+		}
 
+		System.out.println("Building path");
+		Building cursor = to;
+		while (cursor != null) {
+			System.out.println("Cursor is: " + cursor.getName());
+			path.add(cursor);
+			cursor = openedBy.get(cursor);
+		}
+		Collections.reverse(path);
+
+		return new Path(path);
+	}
+	
+	/**
+	 * @param from
+	 * @param to
+	 * @param adjacencies
+	 * @return
+	 */
+	private static Path bestFirstSearch_Distance_Backup(Building from, Building to,
+			Collection<Relation> adjacencies) {
+		Set<Building> open = new HashSet<Building>();
+		Set<Building> closed = new HashSet<Building>();
+		List<Building> path = new ArrayList<Building>();
+		Map<Building, Collection<Building>> neighbors = buildNeighborMap(adjacencies);
+		Map<Building, Building> openedBy = new HashMap<Building, Building>();
+		Map<Building, Double> openedDistance = new HashMap<Building,Double>();
+
+		Building mostRecent = from;
+		open.add(from);
+		openedBy.put(from, null);
+		//openedDistance.put(from,0.0);
+		//closed.add(from); 
+		while (!open.isEmpty() ) 
+		{
+			//Building b = open.poll();
+			double minDistance = Double.MAX_VALUE;
+			Building best = null;
+			
+			for(Building b: open)
+			{
+				if(b.distanceTo(mostRecent)<minDistance)
+				{
+					minDistance = b.distanceTo(mostRecent);
+					best = b;
+				}
+			}
+			
+			open.remove(best);
+			closed.add(best);
+			mostRecent = best;
+			
+			
+			System.out.println("Adding best" + best.getName());
+			if (best == to)
+				break;
+
+			Collection<Building> neighborList = neighbors.get(best);
+			System.out.println("Adding neighbors of " + best.getName());
+			for (Building n : neighborList) 
+			{
+				if (!closed.contains(n))
+				{
+					open.add(n);
+					openedDistance.put(n,openedDistance.get(best)+n.distanceTo(best));
+					openedBy.put(n, best);//mark "n" as opened by "best"
+					
+//					if(!openedDistance.containsKey(n))
+//						openedDistance.put(n, n.distanceTo(best));
+//					
+//					
+//					if(n.distanceTo(best)<openedDistance.get(n))
+//					{
+//						openedBy.put(n,best);
+//						openedDistance.put(n, n.distanceTo(best));
+//						
+//						System.out.println("\tUPDATING OPEN: " + n.getName());
+//					}
+					
+					
+					
+					
+					//openedBy.put(n, best);//mark "n" as opened by "best"
+					//openedDistance.put(n,n.distanceTo(best));
+					
+					//closed.add(n); 
+					System.out.println("\t" + n.getName());
+				} else
+				{
+					if(!openedDistance.containsKey(n))
+						openedDistance.put(n, n.distanceTo(best));
+					
+					
+					if(n.distanceTo(best)<openedDistance.get(n))
+					{
+						//openedBy.put(n,best);
+						//openedDistance.put(n, n.distanceTo(best));
+						
+						System.out.println("\tUPDATING: " + n.getName());
+					}
+					else
+					{
+						System.out.println("\tIGNORING: " + n.getName());
+					}
+				}
+			}
 		}
 
 		System.out.println("Building path");
@@ -258,7 +543,7 @@ public class Path {
 		System.out.println("Directions:");
 		
 		LinkedList<Direction> seedDirections = new LinkedList<Direction>(directionList);
-		LinkedList<Building> finalBuildings = followDirectionBranches(this.path.get(0),seedDirections,directionMap);
+		LinkedList<Building> finalBuildings = followDirectionBranches(this.path.get(0),seedDirections,directionMap,0);
 		
 		int arrivedAtGoal=0;
 		int arrivedAtWrongBuilding=0;
@@ -290,7 +575,7 @@ public class Path {
 		System.out.println("Done\n*****\n");
 	}
 
-	private LinkedList<Building> followDirectionBranches(Building start, LinkedList<Direction> seedDirections, DirectionMap directionMap) 
+	private LinkedList<Building> followDirectionBranches(Building start, LinkedList<Direction> seedDirections, DirectionMap directionMap, int tabs) 
 	{
 		LinkedList<Building> l =new LinkedList<Building>();
 		
@@ -303,6 +588,8 @@ public class Path {
 		
 		if(seedDirections.size() == 0) //at a final building
 		{
+			for(int i=0;i<tabs;i++)
+				System.out.print("\t");
 			System.out.println("At end i think");
 			l.add(start);
 			return l;
@@ -311,14 +598,19 @@ public class Path {
 		
 		Direction d = seedDirections.pop();
 		Set<Building> potentialNextStops = directionMap.goDirection(start, d.getPreps());
-		System.out.println("\tGoing: "+d.toShortString());
+		for(int i=0;i<tabs;i++)
+			System.out.print("\t");
+		
+		System.out.println("Going: "+d.toShortString());
 		if(potentialNextStops == null)
 			return l;
 		for(Building b : potentialNextStops)
 		{
-			System.out.println("\t\tNext stop: "+b.getName());
+			for(int i=0;i<tabs;i++)
+				System.out.print("\t");
+			System.out.println("\tArrive at: "+b.getName());
 			LinkedList<Direction> newDirections = new LinkedList<Direction>(seedDirections);
-			l.addAll(followDirectionBranches(b, newDirections, directionMap));
+			l.addAll(followDirectionBranches(b, newDirections, directionMap, tabs+1));
 		}
 		
 		return l;
