@@ -58,7 +58,7 @@ public class JMouseListener extends MouseInputAdapter {
 //			System.out.println(campus.descriptionOfBuilding(b));
 			
 			System.out.println("Dynamic Description:");
-			System.out.println(campus.buildDynamicDescription(new JPoint2D(x,y)));
+			System.out.println(campus.buildDynamicDescription(new JPoint2D(x,y),"Dynamically Generated Point",-10));
 			System.out.println("*****");
 			
 			
