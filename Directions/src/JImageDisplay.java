@@ -1,11 +1,7 @@
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
 import javax.swing.*;
 
 
@@ -29,12 +25,6 @@ public class JImageDisplay extends JPanel {
 	private Rectangle rect;
 	private Dimension size = new Dimension();
 	
-	//current tracked blob
-	private ArrayList<Rectangle> blobRectangles;
-	
-	private Building trackedBlob;
-	
-	private Set<JPoint2D> greenField;
 	private Collection<Line2D> lines;
 	
 	//tracked points
@@ -42,31 +32,12 @@ public class JImageDisplay extends JPanel {
 	private JPoint2D bluePoint;
 	private static final int RADIUS = 5;
 	
-	//flag to indicate whether there is a new selection since last query of isSelectionUpdated
-	private boolean selectionUpdated;
-	
-	private JMouseListener mouseListener;
-	
 	private JImageDisplay secondaryDisplay;
 
 	public JImageDisplay(Campus campus) {
-		
-//		//initialize two listeners
-//		mouseListener = new JMouseListener(this);
-//		
-//		//add mouse listener
-//		addMouseListener(mouseListener);
-//	    addMouseMotionListener(mouseListener);
-//	    mouseListener.setCampus(campus);
-	    
-		greenField = new HashSet<JPoint2D>();
-		
 	    //add key listener to the JPanel
 	    setFocusable(true);
 	    rect = new Rectangle();
-	    selectionUpdated = false;
-	    
-	    blobRectangles = new ArrayList<Rectangle>();
 	}
 	
 	public void updateImage(BufferedImage image)
@@ -74,19 +45,6 @@ public class JImageDisplay extends JPanel {
 		this.image = image;
 		size.setSize(image.getWidth(), image.getHeight());
 		this.updateUI();
-	}
-
-	
-	protected void drawFeatures(Graphics g)
-	{
-		if(trackedBlob == null)
-			return;
-			
-		JPoint2D centroid = trackedBlob.getCentroid();
-		int radius = trackedBlob.findRadius();
-		g.setColor(Color.red);
-		int drawRadius = (int) (8*radius/10.0);
-		g.drawOval(centroid.getX()-drawRadius, centroid.getY()-drawRadius, 2*drawRadius, 2*drawRadius);
 	}
 	
 	/**
@@ -108,12 +66,6 @@ public class JImageDisplay extends JPanel {
 		if(rect!=null)
 			g.drawRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight());
 		
-		g.setColor(Color.BLUE);
-		for(Rectangle blobRectangle: blobRectangles){
-			g.drawRect((int)blobRectangle.getX(), (int)blobRectangle.getY(), (int)blobRectangle.getWidth(), (int)blobRectangle.getHeight());
-		}
-			
-		drawFeatures(g);
 		if(getRedPoint()!=null)
 		{
 			g.setColor(Color.red);
@@ -125,17 +77,12 @@ public class JImageDisplay extends JPanel {
 			g.fillOval(getBluePoint().getX()-RADIUS, getBluePoint().getY()-RADIUS, RADIUS*2, RADIUS*2);
 		}
 		
-		for(JPoint2D p: greenField)
-		{
-			
-		}
-		
+		g.setColor(Color.blue);
 		if(lines!=null)
 			for(Line2D l : lines)
 			{
 				g.drawLine((int)l.getX1(),(int) l.getY1(), (int)l.getX2(), (int)l.getY2());
 			}
-		
 	}
 
 	public Dimension getPreferredSize() { return size; }
@@ -153,43 +100,6 @@ public class JImageDisplay extends JPanel {
 		return rect;
 	}
 	
-	public boolean isSelectionUpdated()
-	{
-		boolean ret = selectionUpdated;
-		selectionUpdated = false;
-		return ret;
-	}
-	
-	public void setSelectionUpdated()
-	{
-		selectionUpdated = true;
-	}
-
-	public void setBlobs(Vector<Building> jbs) {
-		//System.out.println("Adding "+jbs.size()+" blobs");
-		this.blobRectangles = new ArrayList<Rectangle>();
-
-		
-		Rectangle biggestRectangle = new Rectangle(0, 0);
-		int maxPoints = 0, totalPoints = 0;
-		
-		for(Building blob : jbs)
-		{
-			totalPoints = blob.getNumPoints();
-			if(totalPoints > maxPoints && 
-					blob.getBoundingBox().getHeight() *blob.getBoundingBox().getWidth() < this.getHeight()*this.getWidth())
-			{
-				biggestRectangle= blob.getBoundingBox();
-				maxPoints = blob.getNumPoints();
-				setRedPoint(blob.getCentroid());
-			}
-		}
-		
-		blobRectangles.add(biggestRectangle);
-		this.repaint();
-		
-	}
-
 	public void setSecondaryViewframe(JImageDisplay display) 
 	{
 		secondaryDisplay = display;
@@ -197,14 +107,6 @@ public class JImageDisplay extends JPanel {
 	
 	public JImageDisplay getSecondaryDisplay() {
 		return secondaryDisplay;
-	}
-
-	/**
-	 * Track a blob in the display
-	 * @param blob
-	 */
-	public void setTrackedBlob(Building blob) {
-		this.trackedBlob = blob;
 	}
 
 	/**

@@ -3,7 +3,9 @@ import java.util.Set;
 
 
 /**
- * @author Ben
+ * Encapsulates a direction of travel including several prepositions
+ * and gives a way to pretty print 
+ * @author Benjamin Ludman
  *
  */
 public class Direction 
@@ -35,6 +37,11 @@ public class Direction
 			near = Classifier.Preposition.NEAR;
 	}
 	
+	/**
+	 * Reverse the direction
+	 * @param d
+	 * @return
+	 */
 	public static Direction reverse(Direction d)
 	{
 		Set<Classifier.Preposition> newPrepositions = new HashSet<Classifier.Preposition>();
@@ -104,7 +111,4 @@ public class Direction
 	public Set<Classifier.Preposition> getPreps() {
 		return this.prepositions;
 	}
-
-
-	
 }

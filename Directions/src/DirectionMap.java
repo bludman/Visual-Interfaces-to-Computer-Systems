@@ -1,16 +1,9 @@
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-
-
-/**
- * 
- */
 
 /**
  * Serves as a wrapper for directions  between places
@@ -38,6 +31,12 @@ public class DirectionMap
 		return directionMap.get(to).get(from);
 	}
 	
+	/**
+	 * Get the direction to travel from one building to another
+	 * @param from
+	 * @param to
+	 * @return
+	 */
 	public Direction getDirection(Building from, Building to)
 	{
 		return new Direction(from, to, directionMap.get(from).get(to));
@@ -83,6 +82,11 @@ public class DirectionMap
 		return mapFrom;
 	}
 	
+	/**
+	 * Build a map that gives the prepositions used to define a building (to) based on another (from)
+	 * @param inputFromMap
+	 * @return
+	 */
 	private static Map<Building, Map<Set<Classifier.Preposition>,Set<Building>>> 
 		generateFollowDirectionMap(Map<Building, Map<Building, Set<Classifier.Preposition>>> inputFromMap) 
 	{

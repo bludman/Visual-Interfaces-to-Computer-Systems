@@ -2,7 +2,7 @@ import java.awt.geom.Point2D;
 
 /**
  * Represents a point in the x,y plane.
- *
+ * Based on code from Robotics Fall 2010
  */
 public class JPoint2D 
 {

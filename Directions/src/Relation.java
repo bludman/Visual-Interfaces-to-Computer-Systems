@@ -11,14 +11,13 @@ import java.util.Set;
  * 		discriptee is preposition of/to landmark
  * 			OR
  * 		preposition of/to landmark is discpritee
- * @author Ben
+ * @author Benjamin Ludman
  *
  */
 public class Relation {
 
 	private Classifier.Preposition preposition;
-	private Building landmark,//a
-		descriptee;//b
+	private Building landmark,	descriptee;
 	double distance;
 	
 	/**
@@ -37,9 +36,6 @@ public class Relation {
 		this.descriptee = descriptee;
 		this.distance = landmark.distanceTo(descriptee);
 	}
-
-
-	
 	
 	//------------------------------------------------------
 	// 	Relation Generators
@@ -69,6 +65,11 @@ public class Relation {
 		return relations;
 	}
 
+	/**
+	 * Generate south relations
+	 * @param buildings
+	 * @return
+	 */
 	public static List<Relation> generateSouthRelations(List<Building> buildings) 
 	{
 		List<Relation> relations = new LinkedList<Relation>();
@@ -90,6 +91,11 @@ public class Relation {
 		return relations;
 	}
 	
+	/**
+	 * Generate east relations
+	 * @param buildings
+	 * @return
+	 */
 	public static List<Relation> generateEastRelations(List<Building> buildings) 
 	{
 		List<Relation> relations = new LinkedList<Relation>();
@@ -111,6 +117,11 @@ public class Relation {
 		return relations;
 	}
 	
+	/**
+	 * Generate west relations
+	 * @param buildings
+	 * @return
+	 */
 	public static List<Relation> generateWestRelations(List<Building> buildings) 
 	{
 		List<Relation> relations = new LinkedList<Relation>();
@@ -132,6 +143,11 @@ public class Relation {
 		return relations;
 	}
 	
+	/**
+	 * Generate near relations
+	 * @param buildings
+	 * @return
+	 */
 	public static List<Relation> generateNearRelations(List<Building> buildings) 
 	{
 		List<Relation> relations = new LinkedList<Relation>();
@@ -182,48 +198,10 @@ public class Relation {
 			if(!canBeInferred)
 				retainedRelations.add(r);
 		}
-		
-		
-		
-//		if(buildings==null)
-//			System.err.println("Shit, building list is blank");
-//		
-//		for(Building a: buildings)
-//		{
-//			for(Building b:buildings)
-//			{
-//				if(a==null || b==null || a==b)
-//					continue;
-//				
-//				if(Classifier.northOfAisB(a, b))
-//					relations.add(new Relation(Classifier.directions.NORTH,a,b));
-//			}
-//		}
-		
+
 		return retainedRelations;
-		
-		
-		
 	}
 
-	
-	//------------------------------------------------------
-	// 	Getters/ Setters
-	//------------------------------------------------------
-	
-	public Building getDescriptee() { //was getB()
-		return this.descriptee;
-	}
-
-	public Building getLandmark() { //was getA()
-		return this.landmark;
-	}
-
-	public Classifier.Preposition getType() {
-		return this.preposition;
-	}
-
-	
 	//------------------------------------------------------
 	// 	Object Overrides
 	//------------------------------------------------------
@@ -323,10 +301,8 @@ public class Relation {
 				minB= r.getLandmark();
 			}
 		}
-		
 		return minB;
 	}
-	
 	
 	
 	public static Direction directionToClosestLandmark(Collection<Relation> relations)
@@ -399,12 +375,30 @@ public class Relation {
 		
 		return relevantRelations;
 	}
+	
+	//------------------------------------------------------
+	// 	Getters/ Setters
+	//------------------------------------------------------
+	
+	public Building getDescriptee() { //was getB()
+		return this.descriptee;
+	}
 
+	public Building getLandmark() { //was getA()
+		return this.landmark;
+	}
 
+	public Classifier.Preposition getType() {
+		return this.preposition;
+	}
 
-
+	/**
+	 * The distance defined by this relation
+	 * @return
+	 */
 	private double getDistance() {
 		return distance;
 	}
+
 	
 }

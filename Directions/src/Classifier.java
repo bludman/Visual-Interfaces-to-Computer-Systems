@@ -3,16 +3,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
- */
-
-/**
- * @author Ben
+ * Used for classifying a a building relative to another building or a point relative to a building
+ * @author Benjamin Ludman
  *
  */
 public class Classifier 
 {
-	
 	private static final int MIN = 0;
 	private static final int MAX = 1;
 	public enum Preposition{NORTH,EAST,SOUTH,WEST,NEAR};
@@ -24,11 +20,8 @@ public class Classifier
 	};
 	
 	public Classifier() {
-		
 	
 	}
-	
-	
 	
 	
 	public static boolean northOfAisB(JPoint2D aCenter, JPoint2D bCenter)
@@ -100,14 +93,6 @@ public class Classifier
 		return a.getCentroid().distanceTo(b)<2*a.findRadius();
 	}
 
-
-
-	public static List<Relation> generateRelations(Building b, Building b2) 
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	public static List<Relation> generateNorthRelations(List<Building> buildings) 
 	{
 		List<Relation> relations = new LinkedList<Relation>();
@@ -138,7 +123,7 @@ public class Classifier
 	
 	
 	//------------------------------------------------
-	//	Mask Functions
+	// 	Prepositional Mask Functions
 	//------------------------------------------------
 	
 	public static void northMask(boolean[][] mask, Building landmark)
@@ -222,6 +207,16 @@ public class Classifier
 		}
 	}
 
+	//------------------------------------------------
+	// 	General Mask Functions
+	//------------------------------------------------
+	
+	/**
+	 * Create a bit mask of certain dimensions
+	 * @param height
+	 * @param width
+	 * @return
+	 */
 	public static boolean[][] createMask(int height, int width)
 	{
 		boolean mask[][]= new boolean[height][width];
@@ -235,6 +230,11 @@ public class Classifier
 		return mask;
 	}
 	
+	/**
+	 * Filter a mask based on a set of relations
+	 * @param mask an object that will get filtered according to relations
+	 * @param relations
+	 */
 	public static void mask(boolean[][] mask,Collection<Relation> relations)
 	{
 		for(Relation r: relations)
@@ -242,6 +242,13 @@ public class Classifier
 			mask(mask,r.getType(),r.getLandmark());
 		}
 	}
+	
+	/**
+	 * Mask an image based on a landmark building and preposition
+	 * @param mask
+	 * @param type
+	 * @param landmark
+	 */
 	private static void mask(boolean[][] mask, Preposition type, Building landmark) 
 	{
 		switch(type)
@@ -264,6 +271,12 @@ public class Classifier
 		}
 	}
 
+	/**
+	 * Convert a bitmask into an image 
+	 * @param mask mask defining a region
+	 * @param pixel the desired color of the region
+	 * @return
+	 */
 	public static JImage maskToImage(boolean[][] mask, int[] pixel)
 	{
 		JImage im = new JImage(mask[0].length, mask.length, 3);
@@ -271,6 +284,13 @@ public class Classifier
 		return im;
 	}
 	
+	/**
+	 * Convert a bitmask into an image 
+	 * @param mask mask defining a region
+	 * @param pixel the desired color of the region
+	 * @param background background behind the added region
+	 * @return
+	 */
 	public static JImage maskToImage(boolean[][] mask, int[] pixel, JImage background)
 	{
 		for(int row=0;row<mask.length;row++)

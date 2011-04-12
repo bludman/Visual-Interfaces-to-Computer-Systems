@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Ben
+ * Class that manages a campus of buildings and helps with various actions involving converting 
+ * positions, directions and paths in the campus into natural language
+ * @author Benjamin Ludman
  *
  */
 public class Campus 
 {
-	
 	/** Map labels to building objects */
 	private Map<Integer, Building> buildings;
 	
@@ -39,7 +40,10 @@ public class Campus
 	private JPoint2D start;
 	private JPoint2D goal;
 	
-	
+	/**
+	 * Constructor
+	 * @param campusName
+	 */
 	public Campus(String campusName)
 	{
 		String campus = campusName+"-campus.pgm";
@@ -160,6 +164,12 @@ public class Campus
 		}
 	}
 	
+	/**
+	 * Get a building given a row and column in the image
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	public Building getBuilding(int row, int col)
 	{
 		if(row>=pixelToBuildingMap.length || col>= pixelToBuildingMap[0].length)
@@ -168,17 +178,21 @@ public class Campus
 		return buildings.get(pixelToBuildingMap[row][col]);
 	}
 	
+	/**
+	 * Get a building given a label
+	 * @param label
+	 * @return
+	 */
 	public Building getBuilding(int label)
 	{
 		return (Building)buildings.get(label);
 	}
 	
-	public String getBuildingName(int label)
-	{
-		return getBuilding(label).getName();
-	}
-	
-	public void generateGraph()
+	/**
+	 * Generate the graph of this campus buy generating the relations and 
+	 * creating a direction map from the relations
+	 */
+	private void generateGraph()
 	{
 		this.relations = generateRelations(buildingList);
 
@@ -235,6 +249,13 @@ public class Campus
 		return new BuildingDescription(b, connectivity);
 	}
 	
+	/**
+	 * Generate a color image of the campus with source and goal point clouds
+	 * superimposed
+	 * @param start
+	 * @param goal
+	 * @return
+	 */
 	public JImage getColoredDisplay(JPoint2D start, JPoint2D goal)
 	{
 		final int[] green = {0,255,0};
@@ -243,8 +264,8 @@ public class Campus
 		this.start = start;
 		this.goal = goal;
 		
-		JImage sIm = null;
-		JImage gIm = null;
+		JImage startImage = null;
+		JImage goalImage = null;
 		Building startBuilding = null;
 		Building goalBuilding = null;
 		Direction toStartBuilding = null;
@@ -258,7 +279,7 @@ public class Campus
 			startBuilding = Relation.closestLandmark(sDescription.getRelations());
 			toStartBuilding = Relation.directionToClosestLandmark(sDescription.getRelations());
 			Classifier.mask(sMask, sDescription.getRelations());
-			sIm = Classifier.maskToImage(sMask, green,displayImage.copy());
+			startImage = Classifier.maskToImage(sMask, green,displayImage.copy());
 		}
 		
 		if(goal!=null)
@@ -270,44 +291,51 @@ public class Campus
 			terminalGuidance = Relation.directionFromClosestLandmark(gDescription.getRelations());
 			Classifier.mask(gMask, gDescription.getRelations());
 			if(start!=null)
-				gIm = Classifier.maskToImage(gMask, red,sIm);
+				goalImage = Classifier.maskToImage(gMask, red,startImage);
 			else
-				gIm = Classifier.maskToImage(gMask, red,displayImage.copy());
+				goalImage = Classifier.maskToImage(gMask, red,displayImage.copy());
 		}
-		
-		
 		
 		if(startBuilding != null && goalBuilding !=null){
 			System.out.println("*****");
 			System.out.println("Found buildings closest to start and goal points");
 			System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
-			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
+			currentPath = Path.findBestPath(startBuilding, goalBuilding, this.relations);
 			System.out.println("Shortest Path:\n\t"+currentPath.toString());
 			System.out.println("*****\n");
 			System.out.println("Directions from start point to goal point:");
 			
-			//System.out.println("Directions to first building:");
 			System.out.println(toStartBuilding);
-			//System.out.println("Building Directions:");
 			System.out.println(currentPath.getDirectionsAsString(this.directionMap));
-			//System.out.println("Terminal guidance:");
 			System.out.println(terminalGuidance);
 			System.out.println("*****\n");
 			
-			currentPath.simulate(directionMap);
+			currentPath.simulateTraversalAndAnalyze(directionMap);
 		}
 		
-		return gIm!=null? gIm: sIm;
+		return goalImage!=null? goalImage: startImage;
 	}
 
+	/**
+	 * Get the image of this campus meant for displaying
+	 * @return
+	 */
 	public JImage getDisplayImage() {
 		return new JImage(this.displayImage);
 	}
 	
+	/**
+	 * Get the current path stored on this campus
+	 * @return
+	 */
 	public Path getCurrentPath(){
 		return this.currentPath;
 	}
 	
+	/**
+	 * Get the lines for the current path on the campus
+	 * @return
+	 */
 	public Collection<Line2D> getCurrentLines() {
 		
 		if(this.start==null || this.goal==null)

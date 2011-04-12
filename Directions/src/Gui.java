@@ -37,9 +37,6 @@ public class Gui {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel = new JPanel(new BorderLayout());
 		
-		
-		
-		
 		JPanel infoBar = new JPanel();
 		JLabel startPointLabel = new JLabel("Start Point:");
 		startPointValue = new JTextField(10);
@@ -47,7 +44,6 @@ public class Gui {
 		endPointValue = new JTextField(10);
 		pickingButton = new JButton("Picking Start Point");
 		pickingButton.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				togglePicking();
@@ -61,8 +57,6 @@ public class Gui {
 		infoBar.add(pickingButton);
 		panel.add(infoBar,BorderLayout.NORTH);
 		
-		
-		
 		JPanel statusBar = new JPanel();
 		JLabel clickPositionLabel = new JLabel("Building Details:");
 		clickPositionDetails = new JTextField(47);
@@ -70,14 +64,10 @@ public class Gui {
 		statusBar.add(clickPositionDetails);		
 		panel.add(statusBar,BorderLayout.SOUTH);
 		
-		
-		
-		
 		campus = new Campus("ass3");
 		display = new JImageDisplay(campus);
 		display.updateImage(campus.getDisplayImage().getBufferedImage());
 		panel.add(display, BorderLayout.EAST);
-		
 		
 		greenDescription = new JTextArea(75, 20);
 		redDescription = new JTextArea(75, 20);
@@ -86,23 +76,18 @@ public class Gui {
 		cloudDescriptionPanel.add(redDescription);
 		panel.add(cloudDescriptionPanel,BorderLayout.WEST);
 		
-		
-		
-		
 		JMouseListener listener = new JMouseListener(display,campus,this);
-		
 		
 		panel.setOpaque(true);
 		frame.setContentPane(panel);
 		frame.pack();
-		//frame.setBounds(20,20,300,600);
 		frame.setSize(new Dimension(650, 600));
-		
 		frame.setVisible(true);
-		
-		
 	}
 
+	/**
+	 * Toggle which point is being selected
+	 */
 	public void togglePicking()
 	{
 		if(mode==MODES.PICKING_START_POINT)
@@ -116,15 +101,6 @@ public class Gui {
 			pickingButton.setText("Picking Start Point");
 		}
 		showColoredImage();
-		
-	}
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) 
-	{
-		Gui gui  = new Gui();
 	}
 
 	public void setStatusBar(String details) 
@@ -142,25 +118,11 @@ public class Gui {
 		this.mode = mode;
 	}
 
-	public void setStartPoint(int x, int y) {
-		this.startPoint = new JPoint2D(x,y);
-		startPointValue.setText(startPoint.toString());
-	}
-
-	public void setEndPoint(int x, int y) {
-		this.endPoint = new JPoint2D(x,y);
-		endPointValue.setText(endPoint.toString());
-		
-		//System.out.println(startPoint.angleTo(endPoint));
-		//System.out.println(Classifier.direction(startPoint, endPoint));
-		
-	}
-	
+	/**
+	 * Show the image with point clouds
+	 */
 	public void showColoredImage()
 	{
-		//if(this.startPoint==null || this.endPoint==null)
-			//return;
-		
 		this.display.updateImage(campus.getColoredDisplay(this.startPoint, this.endPoint).getBufferedImage());
 		display.setLines(campus.getCurrentLines());
 	}
@@ -181,13 +143,49 @@ public class Gui {
 		this.frame.repaint();
 	}
 
+	/**
+	 * Set the start point displayed
+	 * @param x
+	 * @param y
+	 */
+	public void setStartPoint(int x, int y) {
+		this.startPoint = new JPoint2D(x,y);
+		startPointValue.setText(startPoint.toString());
+	}
+	
+	/**
+	 * Set the description of the start point
+	 * @param description
+	 */
 	public void setStartDescription(BuildingDescription description) {
 		this.greenDescription.setText(description.toString());
-		
 	}
 
+	/**
+	 * Set the end point displayed
+	 * @param x
+	 * @param y
+	 */
+	public void setEndPoint(int x, int y) {
+		this.endPoint = new JPoint2D(x,y);
+		endPointValue.setText(endPoint.toString());
+	}
+	
+	/**
+	 * Set the description of the goal point
+	 * @param description
+	 */
 	public void setGoalDescription(BuildingDescription description) {
 		this.redDescription.setText(description.toString());
-		
+	}
+	
+	
+	/**
+	 * Launch the GUI
+	 * @param args
+	 */
+	public static void main(String[] args) 
+	{
+		Gui gui  = new Gui();
 	}
 }

@@ -1,5 +1,4 @@
 import java.awt.Rectangle;
-import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -16,15 +15,8 @@ public class Building {
 	private JPoint2D centroid;
 	private boolean validCentroid;
 	
-	
-	//XXX: refactor this?
 	private Vector<JPoint2D> mPoints;
 	private HashSet<JPoint2D> points;
-	private JImage mask;
-	
-	//XXX: kill this?
-	private int originalImageWidth;
-	private int originalImageHeight;
 	
 	private String name;
 	private int label;
@@ -52,24 +44,6 @@ public class Building {
 		this();
 		this.name = name;
 		this.label = label;
-	}
-
-	
-	//XXX: kill this?
-	public JImage getMask()
-	{
-		if(originalImageHeight==0){
-			originalImageHeight = getHeight();
-			originalImageWidth = getWidth();
-		}
-			
-		mask = JImage.getBlackImage(originalImageWidth, originalImageHeight, 1);
-		
-		for(JPoint2D point : points)
-		{
-			mask.setPixel(point.getX(), point.getY(), new int[]{255});
-		}
-		return mask;
 	}
 	
 	/**
@@ -143,7 +117,9 @@ public class Building {
 		return new JPoint2D(this.centroid);
 	}
 	
-	
+	/**
+	 * Calculate the position of the centroid
+	 */
 	private void calculateCentroid()
 	{
 		int xSum=0;
@@ -165,33 +141,6 @@ public class Building {
 		this.centroid = new JPoint2D(xSum, ySum);
 	}
 		
-	//XXX: kill this?
-	/**
-	 * Find the biggest blob from a list of blobs
-	 * @param jbs
-	 * @param width
-	 * @param height
-	 * @return
-	 */
-	public static Building findBiggestBlob(Vector<Building> jbs,  int width, int height) 
-	{	
-		Building biggest = new Building();
-		if (jbs == null)
-		{
-			return null;
-		}
-		
-		for (Building b : jbs)
-		{
-			if (b.getBoundingBox().getHeight() * b.getBoundingBox().getWidth() < height * width &&
-					b.getNumPoints() > biggest.getNumPoints())
-			{
-				biggest = b;
-			}
-		}
-		
-		return biggest;
-	}
 	
 	public Rectangle getBoundingBox()
 	{
@@ -200,53 +149,6 @@ public class Building {
 	
 	public boolean contains(JPoint2D m) {
 		return this.points.contains(m);
-	}
-
-	
-	//XXX: kill this?
-	public JPoint2D getPointBelow(JPoint2D point)
-	{
-		if(point==null)
-			return null;
-		
-		int y = point.getY();
-		int x = point.getX();
-		int maxY = y;
-		for(JPoint2D p: mPoints)
-		{
-			if(p.getX()==x && p.getY()>y)
-				maxY=p.getY();
-		}
-		
-		return new JPoint2D(x,maxY);
-	}
-	
-	//XXX: kill this?
-	/**
-	 * Return the percent withing a radius of the centroid that is part of the blob
-	 * @return
-	 */
-	public double getPercentCoverage()
-	{
-		int radius = (int) (8*findRadius()/10);
-		int x = getCentroid().getX();
-		int y = getCentroid().getY();
-		double percent=0;
-		for(JPoint2D point : points)
-		{
-			double dist = Point2D.distance(x, y, point.getX(), point.getY());
-			if(dist<=radius)
-				percent++;
-		}
-		
-		percent/=Math.floor(Math.PI*radius*radius);
-		return percent;
-	}
-
-	//XXX: kill this?
-	public double getWidthHeightRatio()
-	{
-		return (double)getWidth()/ getHeight();
 	}
 	
 	public String getName()
@@ -265,8 +167,6 @@ public class Building {
 	public String toString() {
 		//x click, y click, encoded integer, x center, y center, area, x upper left, y upper left, x lower right, y lower right, name.
 		return this.label+","+this.getCentroid().getX()+","+this.getCentroid().getY()+","+this.getArea()+","+mX+","+mY+","+ (mX+mWidth)+","+(mY+mHeight)+","+ this.name;
-		
-		
 	}
 
 	/**

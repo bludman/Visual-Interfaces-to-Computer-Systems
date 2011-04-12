@@ -21,6 +21,9 @@ public class JMouseListener extends MouseInputAdapter {
 	    display.addMouseMotionListener(this);
 	}
 	
+	/**
+	 * Handle mouse click, gather information from the campus and pass to gui
+	 */
 	public void mousePressed(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();

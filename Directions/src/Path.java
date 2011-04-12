@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Ben
+ * Encapsulates a path between 2 buildings by traversing between other buildings
+ * Helps generate the path and analyze it
+ * @author Benjamin Ludman
  * 
  */
 public class Path {
@@ -23,25 +25,30 @@ public class Path {
 		this.path = path;
 	}
 	
+	/**
+	 * @return Start of path
+	 */
 	public Building getStart()
 	{
 		return path.get(0);
 	}
 	
+	/**
+	 * @return end of path
+	 */
 	public Building getGoal()
 	{
 		return path.get(path.size()-1);
 	}
 
 	/**
-	 * Find the shortest path between two buildings
-	 * 
+	 * Find the best path between two buildings
 	 * @param from
 	 * @param to
 	 * @param adjacencies
 	 * @return
 	 */
-	public static Path findShortestPath(Building from, Building to,
+	public static Path findBestPath(Building from, Building to,
 			Collection<Relation> adjacencies) {
 		 return bestFirstSearchDijkstra(from, to, adjacencies);
 	}
@@ -187,9 +194,7 @@ public class Path {
 
 	/**
 	 * Parse a path into natural language directions using a direction map
-	 * 
-	 * @param directionMap
-	 *            the direction map
+	 * @param directionMap the direction map
 	 * @return
 	 */
 	public String getDirectionsAsString(DirectionMap directionMap) {
@@ -207,6 +212,10 @@ public class Path {
 		return directionString.toString();
 	}
 	
+	/**
+	 * Calculate the series of directions traveled along this path
+	 * @param directionMap
+	 */
 	private void calculateDirections(DirectionMap directionMap)
 	{
 		this.directionList = new ArrayList<Direction>();
@@ -217,7 +226,11 @@ public class Path {
 		}
 	}
 
-	public void simulate(DirectionMap directionMap) 
+	/**
+	 * Simulate the traversal of the path and analyze it
+	 * @param directionMap
+	 */
+	public void simulateTraversalAndAnalyze(DirectionMap directionMap) 
 	{
 		if(directionList==null)
 			calculateDirections(directionMap);
@@ -260,6 +273,14 @@ public class Path {
 		System.out.println("***Finished Analysis***\n\n");
 	}
 
+	/**
+	 * Recursive call for traversing a path and checking where you would end up given ambiguity in the directions
+	 * @param start
+	 * @param seedDirections
+	 * @param directionMap
+	 * @param tabs
+	 * @return
+	 */
 	private LinkedList<Building> followDirectionBranches(Building start, LinkedList<Direction> seedDirections, DirectionMap directionMap, int tabs) 
 	{
 		LinkedList<Building> l =new LinkedList<Building>();
