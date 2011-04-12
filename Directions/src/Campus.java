@@ -269,7 +269,7 @@ public class Campus
 		if(start!=null)
 		{
 			boolean[][] sMask=Classifier.createMask(this.displayImage.getHeight(), this.displayImage.getWidth());
-			BuildingDescription sDescription = buildDynamicDescription(start);
+			BuildingDescription sDescription = buildDynamicDescription(start,"Dynamically Generated Start Point",-1);
 			Relation.closestRelations(sDescription.getRelations());
 			startBuilding = Relation.closestLandmark(sDescription.getRelations());
 			toStartBuilding = Relation.directionToClosestLandmark(sDescription.getRelations());
@@ -280,7 +280,7 @@ public class Campus
 		if(goal!=null)
 		{
 			boolean[][] gMask=Classifier.createMask(this.displayImage.getHeight(), this.displayImage.getWidth());
-			BuildingDescription gDescription = buildDynamicDescription(goal);
+			BuildingDescription gDescription = buildDynamicDescription(goal,"Dynamically Generated Goal Point",-2);
 			Relation.closestRelations(gDescription.getRelations());
 			goalBuilding = Relation.closestLandmark(gDescription.getRelations());
 			terminalGuidance = Relation.directionFromClosestLandmark(gDescription.getRelations());
@@ -331,7 +331,7 @@ public class Campus
 	 * @param point
 	 * @return
 	 */
-	public BuildingDescription  buildDynamicDescription(JPoint2D point)
+	public BuildingDescription  buildDynamicDescription(JPoint2D point, String name, int lable)
 	{
 		Building b = new Building("Dynamically Generated Point",-1);
 		b.addPoint(point);
