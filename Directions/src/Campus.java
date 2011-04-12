@@ -296,7 +296,7 @@ public class Campus
 		if(startBuilding != null && goalBuilding !=null){
 			System.out.println("Finding shortest path between "+startBuilding.getName()+" and "+goalBuilding.getName());
 			currentPath = Path.findShortestPath(startBuilding, goalBuilding, this.relations);
-			System.out.println("PATH:\n"+currentPath.toString());
+			System.out.println("Shortest Path:\n\t"+currentPath.toString());
 			System.out.println("Directions to first building:");
 			System.out.println(toStartBuilding);
 			System.out.println("Building Directions:");
