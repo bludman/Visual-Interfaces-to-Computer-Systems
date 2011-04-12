@@ -38,8 +38,8 @@ public class JImageDisplay extends JPanel {
 	private Collection<Line2D> lines;
 	
 	//tracked points
-	public JPoint2D redPoint;
-	public JPoint2D bluePoint;
+	private JPoint2D redPoint;
+	private JPoint2D bluePoint;
 	private static final int RADIUS = 5;
 	
 	//flag to indicate whether there is a new selection since last query of isSelectionUpdated
@@ -104,7 +104,9 @@ public class JImageDisplay extends JPanel {
 		
 		// draw a rectangle created by mouse dragging
 		g.setColor(Color.red);
-		g.drawRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight());
+		
+		if(rect!=null)
+			g.drawRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight());
 		
 		g.setColor(Color.BLUE);
 		for(Rectangle blobRectangle: blobRectangles){
@@ -112,15 +114,15 @@ public class JImageDisplay extends JPanel {
 		}
 			
 		drawFeatures(g);
-		if(redPoint!=null)
+		if(getRedPoint()!=null)
 		{
 			g.setColor(Color.red);
-			g.fillOval(redPoint.getX()-RADIUS, redPoint.getY()-RADIUS, RADIUS*2, RADIUS*2);
+			g.fillOval(getRedPoint().getX()-RADIUS, getRedPoint().getY()-RADIUS, RADIUS*2, RADIUS*2);
 		}
-		if(bluePoint!=null)
+		if(getBluePoint()!=null)
 		{
 			g.setColor(Color.blue);
-			g.fillOval(bluePoint.getX()-RADIUS, bluePoint.getY()-RADIUS, RADIUS*2, RADIUS*2);
+			g.fillOval(getBluePoint().getX()-RADIUS, getBluePoint().getY()-RADIUS, RADIUS*2, RADIUS*2);
 		}
 		
 		for(JPoint2D p: greenField)
@@ -140,7 +142,10 @@ public class JImageDisplay extends JPanel {
 	
 	public void setSelectedRectangle(Rectangle r)
 	{
-		rect = new Rectangle(r);
+		if(r==null)
+			rect = null;
+		else
+			rect = new Rectangle(r);
 	}
 	
 	public Rectangle getSelectedRectangle()
@@ -176,7 +181,7 @@ public class JImageDisplay extends JPanel {
 			{
 				biggestRectangle= blob.getBoundingBox();
 				maxPoints = blob.getNumPoints();
-				redPoint = blob.getCentroid();
+				setRedPoint(blob.getCentroid());
 			}
 		}
 		
@@ -213,6 +218,22 @@ public class JImageDisplay extends JPanel {
 	public void setLines(Collection<Line2D> lines)
 	{
 		this.lines = lines;
+	}
+
+	public void setRedPoint(JPoint2D redPoint) {
+		this.redPoint = redPoint;
+	}
+
+	public JPoint2D getRedPoint() {
+		return redPoint;
+	}
+
+	public void setBluePoint(JPoint2D bluePoint) {
+		this.bluePoint = bluePoint;
+	}
+
+	public JPoint2D getBluePoint() {
+		return bluePoint;
 	}
 
 }
