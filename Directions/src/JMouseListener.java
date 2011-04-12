@@ -1,6 +1,4 @@
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-
 import javax.swing.event.MouseInputAdapter;
 
 
@@ -9,7 +7,6 @@ import javax.swing.event.MouseInputAdapter;
  * @author Benjamin Ludman
  */
 public class JMouseListener extends MouseInputAdapter {
-	private Rectangle currentRect;
 	private JImageDisplay display;
 	private Campus campus;
 	private Gui gui;
@@ -30,16 +27,11 @@ public class JMouseListener extends MouseInputAdapter {
 		
 		if(e.getButton() == MouseEvent.BUTTON1 )
 		{
-			//System.out.println("Updating");
-			//currentRect = new Rectangle(x, y, 0, 0);
-			//updateSize(e);
 			
 			if(gui.getMode()==Gui.MODES.PICKING_START_POINT){
 				gui.setStartPoint(x,y);
-				//gui.setMode(Gui.MODES.PICKING_END_POINT);
 			}else if(gui.getMode()==Gui.MODES.PICKING_END_POINT){
 				gui.setEndPoint(x,y);
-				//gui.setMode(Gui.MODES.PICKING_START_POINT);
 			}
 			this.gui.togglePicking();
 			
@@ -50,46 +42,31 @@ public class JMouseListener extends MouseInputAdapter {
 		{
 			
 			/*Identify building */
-//			System.out.println(x+","+y);
-//			Building b = campus.getBuilding(y, x);
-//			display.bluePoint=b.getCentroid();
-//			gui.setStatusBar(x+","+y+","+ b.toString());
-//			System.out.println(b.getName());
-//			System.out.println(campus.descriptionOfBuilding(b));
+			System.out.println(x+","+y);
+			Building b = campus.getBuilding(y, x);
+			if(b.getLabel()!=0)
+			{
+				display.bluePoint=b.getCentroid();
+				display.setSelectedRectangle(b.getBoundingBox());
+				gui.setStatusBar(x+","+y+","+ b.toString());
+				System.out.println(b.getName());
+				System.out.println(campus.descriptionOfBuilding(b));
+			}
+			else
+			{
+				gui.setStatusBar(x+","+y+","+ 0);
+			}
 			
 			System.out.println("Dynamic Description:");
 			System.out.println(campus.buildDynamicDescription(new JPoint2D(x,y),"Dynamically Generated Point",-10));
 			System.out.println("*****");
 			
-			
-			//display.setSelectedRectangle(b.getBoundingBox());
-			//display.repaint();
+			gui.redraw();
 			
 			
 		}
 	}
 
-	public void mouseDragged(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON1)
-				updateSize(e);
-	}
-
-	public void mouseReleased(MouseEvent e) {
-		//updateSize(e);
-		//display.setSelectionUpdated();
-	}
-
-	private void updateSize(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		if(e.getButton() == MouseEvent.BUTTON1 )
-		{
-		currentRect.setSize(x - currentRect.x,
-				y - currentRect.y);
-		display.setSelectedRectangle(currentRect);
-		display.repaint();
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)

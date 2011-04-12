@@ -60,7 +60,7 @@ public class Gui {
 		
 		
 		JPanel statusBar = new JPanel();
-		JLabel clickPositionLabel = new JLabel("Click Details:");
+		JLabel clickPositionLabel = new JLabel("Building Details:");
 		clickPositionDetails = new JTextField(50);
 		statusBar.add(clickPositionLabel);
 		statusBar.add(clickPositionDetails);		
@@ -153,8 +153,19 @@ public class Gui {
 		frame.repaint();
 	}
 
+	/**
+	 * Set the title of the GUI
+	 * @param title
+	 */
 	public void setTitle(String title)
 	{
 		this.frame.setTitle("Campus explorer: "+title);
+	}
+
+	/**
+	 * Redraw the GUI
+	 */
+	public void redraw() {
+		this.frame.repaint();
 	}
 }

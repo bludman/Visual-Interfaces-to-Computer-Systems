@@ -278,5 +278,9 @@ public class Building {
 		return this.getCentroid().distanceTo(that.getCentroid());
 	}
 
+	public int getLabel() {
+		return this.label;
+	}
+
 	
 }
